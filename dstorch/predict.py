@@ -17,7 +17,7 @@ def flip_tensor_lr(batch):
 
 def flip_tensor_ud(batch):
     rows = batch.data.size()[-2]
-    return torch.index_select(batch, 2, variable(torch.LongTensor(list(reversed(range(rows)))).cuda()))
+    return torch.index_select(batch, 2, variable(torch.LongTensor(list(reversed(range(rows))))))
 
 def to_numpy(batch):
     if isinstance(batch, tuple):
@@ -33,7 +33,7 @@ def batch_predict(model, batch, flips=flip.FLIP_NONE):
             pred3 = flip_tensor_ud(model(flip_tensor_ud(batch)))
             pred4 = flip_tensor_ud(flip_tensor_lr(model(flip_tensor_ud(flip_tensor_lr(batch)))))
             masks.extend([pred3, pred4])
-        new_mask = torch.mean(torch.stack(masks))
+        new_mask = torch.mean(torch.stack(masks), dim=0)
         return to_numpy(new_mask)
     return to_numpy(pred1)
 
