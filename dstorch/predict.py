@@ -15,7 +15,9 @@ def predict(model, images, ids, transform, batch_size):
         outputs = model(inputs)
 
         for i, outputs in enumerate(outputs):
-            t_mask = (F.sigmoid(outputs[i]).data.cpu().numpy())[tops[i]:-tops[i], lefts[i]:-lefts[i]]
-            test_predictions.append(t_mask)
+            prediction = (F.sigmoid(outputs[i]).data.cpu().numpy())
+            height, width = prediction.shape
+            prediction = prediction[tops[i]:height-tops[i], lefts[i]:width-lefts[i]]
+            test_predictions.append(prediction)
             test_names.append(names[i])
     return test_predictions, test_names
