@@ -13,11 +13,11 @@ class flip:
 
 def flip_tensor_lr(batch):
     columns = batch.data.size()[-1]
-    return batch.index_select(3, torch.LongTensor(list(reversed(range(columns)))).cuda())
+    return torch.index_select(batch, 3, torch.LongTensor(list(reversed(range(columns)))).cuda())
 
 def flip_tensor_ud(batch):
     rows = batch.data.size()[-2]
-    return batch.index_select(2, torch.LongTensor(list(reversed(range(rows)))).cuda())
+    return torch.index_select(batch, 2, torch.LongTensor(list(reversed(range(rows)))).cuda())
 
 def to_numpy(batch):
     if isinstance(batch, tuple):
