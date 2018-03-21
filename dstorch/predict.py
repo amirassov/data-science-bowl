@@ -48,7 +48,7 @@ def predict(model, images, ids, transform, batch_size):
         inputs = variable(inputs, volatile=True)
         outputs = batch_predict(model, inputs, flips=flip.FLIP_FULL)
 
-        for i, output in enumerate(outputs):
+        for i, output in enumerate(outputs[:, 0]):
             print(output.shape)
             height, width = output.shape[:2]
             prediction = output[tops[i]:height-tops[i], lefts[i]:width-lefts[i]]
