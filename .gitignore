@@ -1,14 +1,3 @@
 __pycache__/
-
-# Jupyter Notebook
 .ipynb_checkpoints
-.idea/inspectionProfiles/Project_Default.xml
-.idea/vcs.xml
-.idea/dictionaries/
-.idea/dstorch.iml
-.idea/markdown-navigator.xml
-.idea/markdown-navigator/
-.idea/misc.xml
-.idea/modules.xml
-.idea/preferred-vcs.xml
-.idea/workspace.xml
+.idea/
