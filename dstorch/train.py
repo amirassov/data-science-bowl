@@ -1,20 +1,10 @@
 import random
 
 import numpy as np
-import torch
-from torch.autograd import Variable
-from tqdm import tqdm_notebook
 from torch import nn
+from tqdm import tqdm_notebook
 
-
-def variable(x, volatile=False):
-    if isinstance(x, (list, tuple)):
-        return [variable(y, volatile=volatile) for y in x]
-    return cuda(Variable(x, volatile=volatile))
-
-
-def cuda(x):
-    return x.cuda(async=True) if torch.cuda.is_available() else x
+from dstorch.utils import variable
 
 
 def validation_binary(model: nn.Module, criterion, valid_loader):
