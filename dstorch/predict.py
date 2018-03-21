@@ -2,6 +2,40 @@ from torch.nn import functional as F
 from tqdm import tqdm
 from dstorch.utils import variable
 from dstorch.dataset import make_loader
+import torch
+
+
+class flip:
+    FLIP_NONE = 0
+    FLIP_LR = 1
+    FLIP_FULL = 2
+
+
+def flip_tensor_lr(batch):
+    columns = batch.data.size()[-1]
+    return batch.index_select(3, torch.LongTensor(list(reversed(range(columns)))).cuda())
+
+def flip_tensor_ud(batch):
+    rows = batch.data.size()[-2]
+    return batch.index_select(2, torch.LongTensor(list(reversed(range(rows)))).cuda())
+
+def to_numpy(batch):
+    if isinstance(batch, tuple):
+        batch = batch[0]
+    return F.sigmoid(batch).data.cpu().numpy()
+
+def batch_predict(model, batch, flips=flip.FLIP_NONE):
+    pred1 = model(batch)
+    if flips > flip.FLIP_NONE:
+        pred2 = flip_tensor_lr(model(flip_tensor_lr(batch)))
+        masks = [pred1, pred2]
+        if flips > flip.FLIP_LR:
+            pred3 = flip_tensor_ud(model(flip_tensor_ud(batch)))
+            pred4 = flip_tensor_ud(flip_tensor_lr(model(flip_tensor_ud(flip_tensor_lr(batch)))))
+            masks.extend([pred3, pred4])
+        new_mask = torch.mean(torch.stack(masks))
+        return to_numpy(new_mask)
+    return to_numpy(pred1)
 
 
 def predict(model, images, ids, transform, batch_size):
@@ -12,7 +46,7 @@ def predict(model, images, ids, transform, batch_size):
 
     for batch_num, (inputs, names, tops, lefts) in enumerate(tqdm(loader, desc='Predict')):
         inputs = variable(inputs, volatile=True)
-        outputs = model(inputs)
+        outputs = batch_predict(model, inputs, flips=flip.FLIP_FULL)
 
         for i, outputs in enumerate(outputs):
             prediction = (F.sigmoid(outputs[i]).data.cpu().numpy())
