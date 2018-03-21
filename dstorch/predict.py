@@ -1,5 +1,5 @@
 from torch.nn import functional as F
-from tqdm import tqdm
+from tqdm import tqdm_notebook
 from dstorch.utils import variable
 from dstorch.dataset import make_loader
 import torch
@@ -37,19 +37,20 @@ def batch_predict(model, batch, flips=flip.FLIP_NONE):
         return to_numpy(new_mask)
     return to_numpy(pred1)
 
-
 def predict(model, images, ids, transform, batch_size):
-    loader = make_loader(images, masks=None, ids=ids,
-                         batch_size=batch_size, transform=transform, shuffle=False, mode='predict')
+    loader = make_loader(
+        images, masks=None, ids=ids,
+        batch_size=batch_size, transform=transform,
+        shuffle=False, mode='predict'
+    )
     test_predictions = []
     test_names = []
 
-    for batch_num, (inputs, names, tops, lefts) in enumerate(tqdm(loader, desc='Predict')):
+    for inputs, names, tops, lefts in tqdm_notebook(loader, desc='Predict', total=len(images)):
         inputs = variable(inputs, volatile=True)
         outputs = batch_predict(model, inputs, flips=flip.FLIP_FULL)
 
         for i, output in enumerate(outputs[:, 0]):
-            print(output.shape)
             height, width = output.shape[:2]
             prediction = output[tops[i]:height-tops[i], lefts[i]:width-lefts[i]]
             test_predictions.append(prediction)

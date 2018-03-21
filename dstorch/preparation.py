@@ -4,12 +4,11 @@ import pandas as pd
 def invert_images(classes: pd.DataFrame, images: list, ids: list):
     inverts = []
     for image, _id in zip(images, ids):
-        if classes.loc[classes['id'] == _id, 'background'].iloc[0] in ['white', 'yellow']:
+        if classes.loc[classes['id'] == _id, 'background'].iloc[0] in ['white', 'yellow', 'purple']:
             inverts.append(255 - image)
         else:
             inverts.append(image)
     return inverts
-
 
 def train_val_split(classes: pd.DataFrame, ids: list, *args):
     train_id_set = set(classes.loc[classes['type'] == 'train', 'id'])

@@ -6,34 +6,31 @@ from dstorch.utils import to_float_tensor, pad_image
 
 
 class BowlDataset(Dataset):
-    def __init__(self, images, masks=None, ids=None, transform=None, mode='train'):
+    def __init__(self, images, masks=None, ids=None, transform=None, mode='train', period=128):
         self.images = images
         self.masks = masks
         self.ids = ids
         self.transform = transform
         self.mode = mode
+        self.period = period
 
     def __len__(self):
         return len(self.images)
 
-    def __getitem__(self, idx):
-        img = self.images[idx]
-        if self.masks is not None:
-            mask = self.masks[idx]
-        else:
-            mask = None
-
+    def __getitem__(self, index):
+        img = self.images[index]
+        mask = None if self.masks is None else self.masks[index]
         img, mask = self.transform(img, mask)
 
         if self.mode == 'train':
             return to_float_tensor(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
         elif self.mode == 'validation':
-            pad_img, _, _ = pad_image(img, 128)
-            pad_mask, _, _ = pad_image(mask, 128)
-            return to_float_tensor(pad_img), torch.from_numpy(np.expand_dims(pad_mask, 0)).float()
+            pad_img, _, _ = pad_image(img, self.period)
+            pad_mask, _, _ = np.expand_dims(pad_image(mask, self.period), 0)
+            return to_float_tensor(pad_img), torch.from_numpy(pad_mask).float()
         elif self.mode == 'predict':
-            pad_img, top, left = pad_image(img, 128)
-            return to_float_tensor(pad_img), str(self.ids[idx]), top, left
+            pad_img, top, left = pad_image(img, self.period)
+            return to_float_tensor(pad_img), str(self.ids[index]), top, left
         else:
             raise TypeError('Unknown mode type!')
 
