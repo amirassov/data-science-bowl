@@ -25,8 +25,8 @@ class BowlDataset(Dataset):
         if self.mode == 'train':
             return to_float_tensor(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
         elif self.mode == 'validation':
-            pad_img, _, _ = pad_image(img, self.period)
-            pad_mask, _, _ = np.expand_dims(pad_image(mask, self.period), 0)
+            pad_img = pad_image(img, self.period)[0]
+            pad_mask = np.expand_dims(pad_image(mask, self.period)[0], 0)
             return to_float_tensor(pad_img), torch.from_numpy(pad_mask).float()
         elif self.mode == 'predict':
             pad_img, top, left = pad_image(img, self.period)
