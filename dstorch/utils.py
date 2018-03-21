@@ -17,8 +17,8 @@ def to_float_tensor(img):
     return torch.from_numpy(np.moveaxis(img, -1, 0)).float()
 
 def pad_image(image, period):
-    w, h, _ = image.shape
-    
+    w, h = image.shape[:2]
+
     lr = np.ceil(h / period) * period - h
     left = int(np.ceil(lr / 2))
     right = int(lr - left)
