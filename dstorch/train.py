@@ -11,7 +11,7 @@ def validation_binary(model: nn.Module, criterion, val_loader):
     model.eval()
     losses = []
     
-    for inputs, targets, tops, lefts in val_loader:
+    for inputs, targets in val_loader:
         inputs = variable(inputs, volatile=True)
         targets = variable(targets)
         outputs = model(inputs)
