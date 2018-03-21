@@ -27,6 +27,10 @@ class BowlDataset(Dataset):
 
         if self.mode == 'train':
             return to_float_tensor(img), torch.from_numpy(np.expand_dims(mask, 0)).float()
+        elif self.mode == 'validation':
+            pad_img, _, _ = pad_image(img, 16)
+            pad_mask, _, _ = pad_image(mask, 16)
+            return to_float_tensor(pad_img), torch.from_numpy(np.expand_dims(pad_mask, 0)).float()
         elif self.mode == 'predict':
             pad_img, top, left = pad_image(img, 16)
             return to_float_tensor(img), str(self.ids[idx]), top, left

@@ -7,11 +7,11 @@ from tqdm import tqdm_notebook
 from dstorch.utils import variable
 
 
-def validation_binary(model: nn.Module, criterion, valid_loader):
+def validation_binary(model: nn.Module, criterion, val_loader):
     model.eval()
     losses = []
     
-    for inputs, targets in valid_loader:
+    for inputs, targets, tops, lefts in val_loader:
         inputs = variable(inputs, volatile=True)
         targets = variable(targets)
         outputs = model(inputs)
@@ -25,7 +25,7 @@ def validation_binary(model: nn.Module, criterion, valid_loader):
     return metrics
 
 
-def train(model, n_epochs, batch_size, criterion, train_loader, valid_loader, init_optimizer, lr):
+def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, lr):
     optimizer = init_optimizer(lr)
     epoch, step, report_each, valid_losses = 1, 0, 10, []
     
@@ -55,7 +55,7 @@ def train(model, n_epochs, batch_size, criterion, train_loader, valid_loader, in
                 bar.set_postfix(loss='{:.5f}'.format(mean_loss))
 
             bar.close()
-            valid_metrics = validation_binary(model, criterion, valid_loader)
+            valid_metrics = validation_binary(model, criterion, val_loader)
             valid_loss = valid_metrics['valid_loss']
             valid_losses.append(valid_loss)
         
