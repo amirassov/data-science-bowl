@@ -49,7 +49,7 @@ def predict(model, images, ids, transform, batch_size):
         outputs = batch_predict(model, inputs, flips=flip.FLIP_FULL)
 
         for i, output in enumerate(outputs):
-            height, width = output.shape
+            height, width = output.shape[:2]
             prediction = output[tops[i]:height-tops[i], lefts[i]:width-lefts[i]]
             test_predictions.append(prediction)
             test_names.append(names[i])
