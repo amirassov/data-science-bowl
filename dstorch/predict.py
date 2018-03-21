@@ -48,8 +48,8 @@ def predict(model, images, ids, transform, batch_size):
         inputs = variable(inputs, volatile=True)
         outputs = batch_predict(model, inputs, flips=flip.FLIP_FULL)
 
-        for i, outputs in enumerate(outputs):
-            prediction = (F.sigmoid(outputs[i]).data.cpu().numpy())
+        for i, output in enumerate(outputs):
+            prediction = (F.sigmoid(output).data.cpu().numpy())
             height, width = prediction.shape
             prediction = prediction[tops[i]:height-tops[i], lefts[i]:width-lefts[i]]
             test_predictions.append(prediction)
