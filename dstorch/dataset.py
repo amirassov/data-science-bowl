@@ -33,7 +33,7 @@ class BowlDataset(Dataset):
             return to_float_tensor(pad_img), torch.from_numpy(np.expand_dims(pad_mask, 0)).float()
         elif self.mode == 'predict':
             pad_img, top, left = pad_image(img, 16)
-            return to_float_tensor(img), str(self.ids[idx]), top, left
+            return to_float_tensor(pad_img), str(self.ids[idx]), top, left
         else:
             raise TypeError('Unknown mode type!')
 

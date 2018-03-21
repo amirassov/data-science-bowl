@@ -13,7 +13,7 @@ def dice_loss(preds, trues, weight=None, is_average=True):
         trues = trues * w
     intersection = (preds * trues).sum(1)
     scores = 2. * (intersection + 1) / (preds.sum(1) + trues.sum(1) + 1)
-    
+
     if is_average:
         score = scores.sum() / num
         return torch.clamp(score, 0., 1.)
