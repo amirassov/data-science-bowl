@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 from torch import nn
-from tqdm import tqdm_notebook
+from tqdm import tqdm
 
 from dstorch.utils import variable
 
@@ -32,7 +32,7 @@ def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init
     for epoch in range(epoch, n_epochs + 1):
         model.train()
         random.seed()
-        bar = tqdm_notebook(total=(len(train_loader) * batch_size))
+        bar = tqdm(total=(len(train_loader) * batch_size))
         bar.set_description('Epoch {}, lr {}'.format(epoch, lr))
         losses = []
         _train_loader = train_loader

@@ -3,7 +3,7 @@ import torch
 from torch.autograd import Variable
 import cv2
 import pandas as pd
-from tqdm import tqdm_notebook
+from tqdm import tqdm
 
 
 def variable(x, volatile=False):
@@ -66,7 +66,7 @@ def rle_decoding(rle, shape):
 
 def rles2labels(rles, shapes, ids):
     labels = []
-    for image_id, shape in tqdm_notebook(zip(ids, shapes), total=len(ids)):
+    for image_id, shape in tqdm(zip(ids, shapes), total=len(ids)):
         group = rles[rles['ImageId'] == image_id]
         label = np.zeros(shape, dtype=np.uint8)
         for i, (_, row) in enumerate(group.iterrows()):
@@ -94,7 +94,7 @@ def probability2rle(probability, postprocess_function, **kwargs):
 def mask2rle(predictions, ids, postprocess_function, **kwargs):
     mask_ids = []
     rles = []
-    for i, id_ in tqdm_notebook(enumerate(ids), total=len(ids)):
+    for i, id_ in tqdm(enumerate(ids), total=len(ids)):
         rle = list(probability2rle(predictions[i], postprocess_function, **kwargs))
         rles.extend(rle)
         mask_ids.extend([id_] * len(rle))

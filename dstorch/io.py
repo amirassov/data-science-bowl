@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 from skimage import io
-from tqdm import tqdm_notebook
+from tqdm import tqdm
 from skimage import img_as_bool, img_as_ubyte, img_as_float
 
 
@@ -11,7 +11,7 @@ def read_train_data(train_path, d=3):
     train_images = []
     train_masks = []
 
-    for id_ in tqdm_notebook(train_ids, desc='Reading train data..'):
+    for id_ in tqdm(train_ids, desc='Reading train data..'):
         path = train_path + id_
         image = img_as_ubyte(io.imread(path + '/images/' + id_ + '.png')[:, :, :d])
         train_images.append(image)
@@ -30,7 +30,7 @@ def read_test_data(test_path, d=3):
     test_ids = next(os.walk(test_path))[1]
     test_images = []
     
-    for id_ in tqdm_notebook(test_ids, desc='Reading test data..'):
+    for id_ in tqdm(test_ids, desc='Reading test data..'):
         path = test_path + id_
         image = img_as_ubyte(io.imread(path + '/images/' + id_ + '.png')[:, :, :d])
         test_images.append(image)
