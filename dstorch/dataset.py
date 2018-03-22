@@ -1,9 +1,9 @@
-import numpy as np
-import torch
-from torch.utils.data import Dataset
-from torch.utils.data import DataLoader
-from dstorch.utils import to_float_tensor, pad_image
 import cv2
+import torch
+from torch.utils.data import DataLoader
+from torch.utils.data import Dataset
+
+from dstorch.utils import to_float_tensor, pad_image
 
 
 class BowlDataset(Dataset):

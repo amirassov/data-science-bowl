@@ -32,16 +32,16 @@ def batch_predict(model, batch, flips=0):
         return to_numpy(new_mask)
     return to_numpy(pred1)
 
-def predict(model, images, ids, transform, batch_size, flips):
+def predict(model, filenames,  path_image, transform, batch_size, flips):
     loader = make_loader(
-        images, masks=None, ids=ids,
+        filenames, path_image, path_mask=None,
         batch_size=batch_size, transform=transform,
         shuffle=False, mode='predict'
     )
     test_predictions = []
     test_names = []
 
-    for inputs, names, tops, lefts in tqdm(loader, desc='Predict', total=len(images)):
+    for inputs, names, tops, lefts in tqdm(loader, desc='Predict', total=len(filenames)):
         inputs = variable(inputs, volatile=True)
         outputs = batch_predict(model, inputs, flips=flips)
 
