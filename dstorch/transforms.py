@@ -102,7 +102,7 @@ class Transpose:
         if random.random() < self.prob:
             img = img.transpose(1, 0, 2)
             if mask is not None:
-                mask = mask.transpose(1, 0)
+                mask = mask.transpose(1, 0, 2)
         return img, mask
 
 
