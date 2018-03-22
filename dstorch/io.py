@@ -18,10 +18,10 @@ def read_train_data(train_path, d=3):
         mask = None
         for mask_file in next(os.walk(path + '/masks/'))[2]:
             mask_ = img_as_bool(io.imread(path + '/masks/' + mask_file))
-            if mask is None:
-                mask = np.zeros_like(mask_)
             if len(mask_.shape) > 2:
                 mask_ = mask_[..., 0]
+            if mask is None:
+                mask = np.zeros_like(mask_)
             mask = np.maximum(mask, mask_)
         train_masks.append(img_as_float(mask))
     return train_ids, train_images, train_masks
