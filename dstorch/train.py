@@ -16,7 +16,7 @@ def validation_binary(model: nn.Module, criterion, val_loader):
         targets = variable(targets)
         outputs = model(inputs)
         for i, output in enumerate(outputs):
-            _, _, height, width = output.shape
+            _, height, width = output.shape
             loss = criterion(output[tops[i]:height - tops[i], lefts[i]:width - lefts[i]], targets[i])
             losses.append(loss.data[0])
 
