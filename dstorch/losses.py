@@ -47,5 +47,5 @@ class BCEDiceLossMulti(nn.Module):
     def forward(self, input, target):
         loss = 0
         for cls in range(self.num_classes):
-            loss += dice_loss(input[:, cls], target[:, cls])
+            loss += self.bce_dice(input[:, cls].contiguous(), target[:, cls].contiguous())
         return loss / self.num_classes
