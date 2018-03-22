@@ -4,6 +4,7 @@ from torch.autograd import Variable
 import cv2
 import pandas as pd
 from tqdm import tqdm
+from skimage import img_as_bool, img_as_ubyte
 
 
 def variable(x, volatile=False):
@@ -109,5 +110,18 @@ def invert_images(classes: pd.DataFrame, images: list, ids: list, invert_colors=
             inverts.append(image)
     return inverts
 
+def label2contour(label, kernel):
+    contour = np.zeros_like(label, dtype=bool)
+    for i in np.unique(label):
+        if i:
+            instance = img_as_ubyte(label == i)
+            contour += img_as_bool(cv2.morphologyEx(
+                instance, cv2.MORPH_GRADIENT, kernel=kernel))
+    return contour
 
-
+def get_contours(labels, kernel=np.ones((5, 5))):
+    contours = []
+    for label in tqdm(labels):
+        contour = label2contour(label, kernel)
+        contours.append(contour)
+    return contours
