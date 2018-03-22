@@ -31,8 +31,21 @@ class BCEDiceLoss(nn.Module):
         super().__init__()
         self.size_average = size_average
         self.dice = DiceLoss(size_average=size_average)
+        self.bce = nn.modules.loss.BCEWithLogitsLoss(size_average=self.size_average)
     
     def forward(self, input, target):
-        bce = nn.modules.loss.BCEWithLogitsLoss(size_average=self.size_average)(input, target)
-        dice = self.dice(input, target)
-        return 0.5 * bce - dice
+        return 0.5 * self.bce(input, target) - self.dice(input, target)
+
+
+class BCEDiceLossMulti(nn.Module):
+    def __init__(self, size_average=True, num_classes=1):
+        super().__init__()
+        self.size_average = size_average
+        self.bce_dice = BCEDiceLoss(size_average=size_average)
+        self.num_classes = num_classes
+
+    def forward(self, input, target):
+        loss = 0
+        for cls in range(self.num_classes):
+            loss += self.bce_dice(input[:, cls], target[:, cls])
+        return loss / self.num_classes
