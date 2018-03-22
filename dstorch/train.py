@@ -11,7 +11,7 @@ def validation_binary(model: nn.Module, criterion, val_loader):
     model.eval()
     losses = []
     
-    for inputs, targets in val_loader:
+    for inputs, targets, tops, lefts in val_loader:
         inputs = variable(inputs, volatile=True)
         targets = variable(targets)
         outputs = model(inputs)
@@ -27,8 +27,8 @@ def validation_binary(model: nn.Module, criterion, val_loader):
 
 def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, lr):
     optimizer = init_optimizer(lr)
-    epoch, step, report_each, valid_losses = 1, 0, 10, []
-    
+    epoch, report_each, valid_losses = 1, 10, []
+
     for epoch in range(epoch, n_epochs + 1):
         model.train()
         random.seed()
@@ -47,7 +47,6 @@ def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init
                 batch_size = inputs.size(0)
                 loss.backward()
                 optimizer.step()
-                step += 1
                 
                 bar.update(batch_size)
                 losses.append(loss.data[0])

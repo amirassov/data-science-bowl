@@ -5,7 +5,7 @@ def invert_images(classes: pd.DataFrame, images: list, ids: list):
     inverts = []
     for image, _id in zip(images, ids):
         if classes.loc[classes['id'] == _id, 'background'].iloc[0] in ['white', 'yellow', 'purple']:
-            inverts.append(255 - image)
+            inverts.append(1 - image)
         else:
             inverts.append(image)
     return inverts
