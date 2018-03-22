@@ -34,7 +34,6 @@ class BowlDataset(Dataset):
         else:
             raise TypeError('Unknown mode type!')
 
-
 def make_loader(images, masks, ids, batch_size, transform, workers=1, shuffle=True, mode='train', period=128):
     if images is None:
         raise TypeError('Images must be a list!')

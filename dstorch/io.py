@@ -13,7 +13,7 @@ def read_train_data(train_path, d=3):
 
     for id_ in tqdm_notebook(train_ids, desc='Reading train data..'):
         path = train_path + id_
-        image = img_as_float(io.imread(path + '/images/' + id_ + '.png')[:, :, :d])
+        image = img_as_ubyte(io.imread(path + '/images/' + id_ + '.png')[:, :, :d])
         train_images.append(image)
         mask = None
         for mask_file in next(os.walk(path + '/masks/'))[2]:
@@ -26,14 +26,13 @@ def read_train_data(train_path, d=3):
         train_masks.append(img_as_float(mask))
     return train_ids, train_images, train_masks
 
-
 def read_test_data(test_path, d=3):
     test_ids = next(os.walk(test_path))[1]
     test_images = []
     
     for id_ in tqdm_notebook(test_ids, desc='Reading test data..'):
         path = test_path + id_
-        image = img_as_float(io.imread(path + '/images/' + id_ + '.png')[:, :, :d])
+        image = img_as_ubyte(io.imread(path + '/images/' + id_ + '.png')[:, :, :d])
         test_images.append(image)
     return test_ids, test_images
 
