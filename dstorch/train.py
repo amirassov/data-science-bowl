@@ -17,7 +17,10 @@ def validation_binary(model: nn.Module, criterion, val_loader):
         outputs = model(inputs)
         for i, output in enumerate(outputs):
             _, height, width = output.shape
-            loss = criterion(output[tops[i]:height - tops[i], lefts[i]:width - lefts[i]], targets[i])
+            loss = criterion(
+                output[:, tops[i]:height - tops[i], lefts[i]:width - lefts[i]],
+                targets[i][:, tops[i]:height - tops[i], lefts[i]:width - lefts[i]]
+            )
             losses.append(loss.data[0])
 
     valid_loss = np.mean(losses)
