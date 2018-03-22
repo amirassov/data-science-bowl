@@ -47,5 +47,5 @@ class BCEDiceLossMulti(nn.Module):
     def forward(self, input, target):
         loss = 0
         for cls in range(self.num_classes):
-            loss += self.bce_dice(input[:, cls], target[:, cls])
+            loss += dice_loss(input[:, cls], target[:, cls])
         return loss / self.num_classes
