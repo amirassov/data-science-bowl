@@ -44,8 +44,8 @@ def predict(model, filenames,  path_image, transform, batch_size, flips):
         inputs = variable(inputs, volatile=True)
         outputs = batch_predict(model, inputs, flips=flips)
 
-        for i, output in enumerate(outputs[:, 0]):
+        for i, output in enumerate(outputs):
             height, width = output.shape[:2]
-            test_predictions.append(output[tops[i]:height-tops[i], lefts[i]:width-lefts[i]])
+            test_predictions.append(output[:, tops[i]:height-tops[i], lefts[i]:width-lefts[i]])
             test_names.append(names[i])
     return test_predictions, test_names
