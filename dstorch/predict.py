@@ -5,7 +5,6 @@ from dstorch.dataset import make_loader
 import torch
 
 
-
 def flip_tensor_lr(batch):
     invert_indices = torch.arange(batch.data.size()[-1] - 1, -1, -1).long()
     return batch.index_select(3, variable(invert_indices))

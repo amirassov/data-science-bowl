@@ -27,8 +27,8 @@ class BowlDataset(Dataset):
         if self.mode == 'train':
             return to_float_tensor(img), to_float_tensor(mask)
         elif self.mode == 'validation':
-            pad_img, top, left = pad_image(img, self.period)
-            pad_mask, top, left = pad_image(mask, self.period)
+            pad_img, _, _ = pad_image(img, self.period)
+            pad_mask, _, _ = pad_image(mask, self.period)
             return to_float_tensor(pad_img), to_float_tensor(pad_mask)
         elif self.mode == 'predict':
             pad_img, top, left = pad_image(img, self.period)
