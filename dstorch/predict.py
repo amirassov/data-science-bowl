@@ -48,6 +48,6 @@ def predict(model, filenames,  path_image, transform, batch_size, flips):
         for i, output in enumerate(outputs):
             prediction = np.moveaxis(output, 0, -1)
             height, width = prediction.shape[:2]
-            test_predictions.append(prediction[:, tops[i]:height-tops[i], lefts[i]:width-lefts[i]])
+            test_predictions.append(prediction[tops[i]:height-tops[i], lefts[i]:width-lefts[i]])
             test_names.append(names[i])
     return test_predictions, test_names
