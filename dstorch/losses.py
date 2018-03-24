@@ -29,7 +29,7 @@ class BCEDiceLoss(nn.Module):
         self.bce = nn.modules.loss.BCEWithLogitsLoss()
     
     def forward(self, input, target):
-        return 0.5 * self.bce(input, target) - self.dice(input, target)
+        return self.bce(input, target) - torch.log(self.dice(input, target))
 
 
 class BCEDiceLossMulti(nn.Module):
