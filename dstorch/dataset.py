@@ -32,7 +32,8 @@ class BowlDataset(Dataset):
             return to_float_tensor(pad_img), to_float_tensor(pad_mask)
         elif self.mode == 'predict':
             pad_img, top, left = pad_image(img, self.period)
-            return to_float_tensor(pad_img), str(filename), top, left
+            height, width = img.shape[:2]
+            return to_float_tensor(pad_img), str(filename), top, left, height, width
         else:
             raise TypeError('Unknown mode type!')
 

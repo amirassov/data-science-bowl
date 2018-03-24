@@ -41,13 +41,12 @@ def predict(model, filenames,  path_image, transform, batch_size, flips):
     test_predictions = []
     test_names = []
 
-    for inputs, names, tops, lefts in tqdm(loader, desc='Predict', total=len(filenames)):
+    for inputs, names, tops, lefts, heights, widths in tqdm(loader, desc='Predict', total=len(filenames)):
         inputs = variable(inputs, volatile=True)
         outputs = batch_predict(model, inputs, flips=flips)
 
         for i, output in enumerate(outputs):
             prediction = np.moveaxis(output, 0, -1)
-            height, width = prediction.shape[:2]
-            test_predictions.append(prediction[tops[i]:height-tops[i], lefts[i]:width-lefts[i]])
+            test_predictions.append(prediction[tops[i]:heights[i]+tops[i], lefts[i]:widths[i]+lefts[i]])
             test_names.append(names[i])
     return test_predictions, test_names
