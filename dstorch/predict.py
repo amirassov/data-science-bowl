@@ -3,6 +3,7 @@ from tqdm import tqdm
 from dstorch.utils import variable
 from dstorch.dataset import make_loader
 import torch
+import numpy as np
 
 
 def flip_tensor_lr(batch):
@@ -45,7 +46,8 @@ def predict(model, filenames,  path_image, transform, batch_size, flips):
         outputs = batch_predict(model, inputs, flips=flips)
 
         for i, output in enumerate(outputs):
-            height, width = output.shape[:2]
-            test_predictions.append(output[:, tops[i]:height-tops[i], lefts[i]:width-lefts[i]])
+            prediction = np.moveaxis(output, -1, 0)
+            height, width = prediction.shape[:2]
+            test_predictions.append(prediction[:, tops[i]:height-tops[i], lefts[i]:width-lefts[i]])
             test_names.append(names[i])
     return test_predictions, test_names
