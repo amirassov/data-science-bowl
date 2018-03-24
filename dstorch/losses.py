@@ -4,13 +4,12 @@ import torch
 
 
 def dice_loss(input, target):
-    EPS = 1e-15
     dice_target = (target == 1).float()
     dice_input = F.sigmoid(input)
 
-    intersection = (dice_target * dice_input).sum() + EPS
-    union = dice_target.sum() + dice_input.sum() + EPS
-    return 2.0 * intersection / union
+    intersection = (dice_target * dice_input).sum() + 1
+    union = dice_target.sum() + dice_input.sum() + 1
+    return torch.log(2.0 * intersection) - torch.log(union)
 
 
 class DiceLoss(nn.Module):
@@ -29,7 +28,7 @@ class BCEDiceLoss(nn.Module):
         self.bce = nn.modules.loss.BCEWithLogitsLoss()
     
     def forward(self, input, target):
-        return self.bce(input, target) - torch.log(self.dice(input, target))
+        return self.bce(input, target) - self.dice(input, target)
 
 
 class BCEDiceLossMulti(nn.Module):
