@@ -58,6 +58,5 @@ class BCEDiceLossMCC(nn.Module):
         loss = 0.3 * self.bce_dice(mask_input, mask_target)
         loss += 0.2 * self.bce_dice(contour_input, contour_target)
         loss += 0.3 * self.bce_dice(center_input, center_target)
-        loss += 0.1 * self.bce_dice(torch.mul(mask_input, (1.0 - contour_input)), center_target)
-        loss += 0.1 * self.bce_dice(torch.mul(mask_input, (1.0 - center_input)), contour_target)
-        return loss / (0.3 + 0.2 + 0.3 + 0.1 + 0.1)
+        loss += 0.2 * self.bce_dice(torch.mul(mask_input, (1.0 - contour_input)), center_target)
+        return loss / (0.3 + 0.2 + 0.3 + 0.2)
