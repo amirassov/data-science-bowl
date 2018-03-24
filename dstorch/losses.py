@@ -1,5 +1,6 @@
 from torch import nn
 from torch.nn import functional as F
+import torch
 
 
 def dice_loss(input, target):
@@ -42,3 +43,21 @@ class BCEDiceLossMulti(nn.Module):
         for cls in range(self.num_classes):
             loss += self.bce_dice(input[:, cls], target[:, cls])
         return loss / self.num_classes
+
+
+class BCEDiceLossMCC(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.bce_dice = BCEDiceLoss()
+    
+    def forward(self, input, target):
+        mask_input, mask_target = input[:, 0], target[:, 0]
+        contour_input, contour_target = input[:, 1], target[:, 1]
+        center_input, center_target = input[:, 2], target[:, 2]
+        
+        loss = 0.3 * self.bce_dice(mask_input, mask_target)
+        loss += 0.2 * self.bce_dice(contour_input, contour_target)
+        loss += 0.3 * self.bce_dice(center_input, center_target)
+        loss += 0.1 * self.bce_dice(torch.pow(torch.mul(mask_input, (1.0 - contour_input)), 0.5), center_target)
+        loss += 0.1 * self.bce_dice(torch.pow(torch.mul(mask_input, (1.0 - center_input)), 0.5), contour_target)
+        return loss / (0.3 + 0.2 + 0.3 + 0.1 + 0.1)
