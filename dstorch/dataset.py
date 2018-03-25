@@ -21,7 +21,7 @@ class BowlDataset(Dataset):
     def __getitem__(self, index):
         filename = self.filenames[index]
         img = cv2.imread(self.path_image.format(filename))
-        mask = cv2.imread(self.path_mask.format(filename))
+        mask = cv2.imread(self.path_mask.format(filename)) / 255
         img, mask = self.transform(img, mask)
 
         if self.mode == 'train':
