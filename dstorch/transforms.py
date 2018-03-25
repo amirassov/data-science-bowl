@@ -477,7 +477,7 @@ class RandomContrast:
         if random.random() < self.prob:
             alpha = 1.0 + self.limit * random.uniform(-1, 1)
 
-            gray = cv2.cvtColor(img[:, :, :3], cv2.COLOR_BGR2GRAY)
+            gray = cv2.cvtColor(img[:, :, :3], cv2.COLOR_RGB2GRAY)
             gray = (3.0 * (1.0 - alpha) / gray.size) * np.sum(gray)
             maxval = np.max(img[..., :3])
             dtype = img.dtype
@@ -496,7 +496,7 @@ class RandomSaturation:
             maxval = np.max(img[..., :3])
             dtype = img.dtype
             alpha = 1.0 + random.uniform(-self.limit, self.limit)
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
             gray = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
             img[..., :3] = alpha * img[..., :3] + (1.0 - alpha) * gray
             img[..., :3] = clip(img[..., :3], dtype, maxval)
@@ -512,7 +512,7 @@ class RandomHueSaturationValue:
 
     def __call__(self, image):
         if random.random() < self.prob:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
             h, s, v = cv2.split(image)
             hue_shift = np.random.uniform(self.hue_shift_limit[0], self.hue_shift_limit[1])
             h = cv2.add(h, hue_shift)
@@ -531,7 +531,7 @@ class CLAHE:
         self.tileGridSize = tileGridSize
 
     def __call__(self, im):
-        img_yuv = cv2.cvtColor(im, cv2.COLOR_BGR2YUV)
+        img_yuv = cv2.cvtColor(im, cv2.COLOR_RGB2YUV)
         clahe = cv2.createCLAHE(clipLimit=self.clipLimit, tileGridSize=self.tileGridSize)
         img_yuv[:, :, 0] = clahe.apply(img_yuv[:, :, 0])
         img_output = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
