@@ -2,15 +2,15 @@ import cv2
 import torch
 from torch.utils.data import DataLoader
 from torch.utils.data import Dataset
-
+import numpy as np
 from dstorch.utils import to_float_tensor, pad_image
 
 
 class BowlDataset(Dataset):
-    def __init__(self, filenames, path_image, path_mask, transform, mode, period):
+    def __init__(self, filenames, path_image, paths_mask, transform, mode, period):
         self.filenames = filenames
         self.path_image = path_image
-        self.path_mask = path_mask
+        self.paths_mask = paths_mask
         self.transform = transform
         self.mode = mode
         self.period = period
@@ -21,7 +21,14 @@ class BowlDataset(Dataset):
     def __getitem__(self, index):
         filename = self.filenames[index]
         img = cv2.imread(self.path_image.format(filename))
-        mask = None if self.mode == 'predict' else cv2.imread(self.path_mask.format(filename))
+        height, width = img.shape[:2]
+        if self.mode != 'predict':
+            mask = np.concatenate(
+                [cv2.imread(path.format(filename)).reshape(height, width, -1) for path in self.paths_mask],
+                axis=-1
+            )
+        else:
+            mask = None
         img, mask = self.transform(img, mask)
 
         if self.mode == 'train':
@@ -32,7 +39,7 @@ class BowlDataset(Dataset):
             return to_float_tensor(pad_img), to_float_tensor(pad_mask)
         elif self.mode == 'predict':
             pad_img, top, left = pad_image(img, self.period)
-            height, width = img.shape[:2]
+            
             return to_float_tensor(pad_img), str(filename), top, left, height, width
         else:
             raise TypeError('Unknown mode type!')
