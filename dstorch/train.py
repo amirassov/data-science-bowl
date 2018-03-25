@@ -25,17 +25,28 @@ def validation_binary(model: nn.Module, criterion, val_loader):
     return metrics
 
 
+def cyclic_lr(epoch, init_lr=1e-4, num_epochs_per_cycle=5, cycle_epochs_decay=2, lr_decay_factor=0.5):
+    epoch_in_cycle = epoch % num_epochs_per_cycle
+    lr = init_lr * (lr_decay_factor ** (epoch_in_cycle // cycle_epochs_decay))
+    return lr
+
+
 def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, lr):
-    optimizer = init_optimizer(lr)
+    
     epoch, report_each, valid_losses = 1, 10, []
 
     for epoch in range(epoch, n_epochs + 1):
+        lr = cyclic_lr(epoch)
+        optimizer = init_optimizer(lr)
+        
         model.train()
         random.seed()
+        
         bar = tqdm(total=(len(train_loader) * batch_size))
         bar.set_description('Epoch {}, lr {}'.format(epoch, lr))
         losses = []
         _train_loader = train_loader
+        
         try:
             for i, (inputs, targets) in enumerate(_train_loader):
                 inputs, targets = variable(inputs), variable(targets)
