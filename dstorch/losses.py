@@ -45,6 +45,23 @@ class BCEDiceLossMulti(nn.Module):
         return loss / self.num_classes
 
 
+class BCEDiceLossMSE(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.bce_dice = BCEDiceLoss()
+        self.mse = nn.MSELoss()
+    
+    def forward(self, input, target):
+        mask_input, mask_target = input[:, 0], target[:, 0]
+        center_input, center_target = input[:, 1], target[:, 1]
+        distance_input, distance_target = input[:, 2], target[:, 2]
+
+        loss = 0.5 * self.bce_dice(mask_input, mask_target)
+        loss += 0.4 * self.bce_dice(center_input, center_target)
+        loss += 0.1 * self.mse(distance_input, distance_target)
+        return loss / (0.5 + 0.4 + 0.1)
+
+
 class BCEDiceLossMCC(nn.Module):
     def __init__(self):
         super().__init__()
