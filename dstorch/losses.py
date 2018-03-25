@@ -53,10 +53,12 @@ class BCEDiceLossCenter(nn.Module):
     def forward(self, input, target):
         mask_input, mask_target = input[:, 0], target[:, 0]
         center_input, center_target = input[:, 1], target[:, 1]
+        center_1_input, center_1_target = input[:, 2], target[:, 2]
 
         loss = 0.5 * self.bce_dice(mask_input, mask_target)
-        loss += 0.5 * self.bce_dice(center_input, center_target)
-        return loss / (0.5 + 0.5)
+        loss += 0.3 * self.bce_dice(center_input, center_target)
+        loss += 0.2 * self.bce_dice(center_1_input, center_1_target)
+        return loss / (0.5 + 0.3 + 0.2)
 
 
 class BCEDiceLossMCC(nn.Module):
