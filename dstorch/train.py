@@ -32,9 +32,7 @@ def cyclic_lr(epoch, init_lr=5e-4, num_epochs_per_cycle=5, cycle_epochs_decay=2,
 
 
 def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, lr):
-    
     epoch, report_each, valid_losses = 1, 10, []
-
     for epoch in range(epoch, n_epochs + 1):
         lr = cyclic_lr(epoch)
         optimizer = init_optimizer(lr)
@@ -72,4 +70,5 @@ def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init
         except KeyboardInterrupt:
             bar.close()
             print('done.')
-            return
+            return valid_losses
+    return valid_losses
