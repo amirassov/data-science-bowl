@@ -31,10 +31,17 @@ def cyclic_lr(epoch, init_lr=5e-4, num_epochs_per_cycle=5, cycle_epochs_decay=2,
     return lr
 
 
-def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, lr):
-    epoch, report_each, val_losses = 1, 10, []
-    for epoch in range(epoch, n_epochs + 1):
-        lr = cyclic_lr(epoch)
+def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, cyclic_lr_params=None):
+    if cyclic_lr_params is None:
+        cyclic_lr_params = {
+            'init_lr': 5e-4,
+            'num_epochs_per_cycle': 5,
+            'cycle_epochs_decay': 2,
+            'lr_decay_factor': 0.5
+        }
+    report_each, val_losses = 10, []
+    for epoch in range(1, n_epochs + 1):
+        lr = np.arange(0, 0.001, 0.00005)[epoch]
         optimizer = init_optimizer(lr)
         
         model.train()
