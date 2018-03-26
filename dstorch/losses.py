@@ -42,7 +42,7 @@ class BCEDiceLossCenters(nn.Module):
         mask_input, mask_target = input[:, 0], target[:, 0]
         center_input, center_target = input[:, 1], target[:, 1]
         center_input_04, center_target_04 = input[:, 2], target[:, 2]
-    
+
         loss = self.weights['mask'] * self.bce_dice(mask_input, mask_target)
         loss += self.weights['center'] * self.bce_dice(center_input, center_target)
         loss += self.weights['center_04'] * self.bce_dice(center_input_04, center_target_04)
