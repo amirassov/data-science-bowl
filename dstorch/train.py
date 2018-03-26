@@ -40,22 +40,22 @@ def train(
         model, n_epochs, batch_size,
         criterion, train_loader,
         val_loader, init_optimizer,
-        init_lr=0.0003, cyclic_lr_params=None, cycle_start_epoch=50
+        end_lr=0.0001, cyclic_lr_params=None, cycle_start_end=100
 ):
     if cyclic_lr_params is None:
         cyclic_lr_params = {
-            'init_lr': 0.0003,
+            'init_lr': 0.0005,
             'num_epochs_per_cycle': 5,
             'cycle_epochs_decay': 2,
-            'lr_decay_factor': 0.5
+            'lr_decay_factor': 0.4
         }
-        
+
     report_each, val_losses = 10, []
     for epoch in range(1, n_epochs + 1):
-        if epoch >= cycle_start_epoch:
-            lr = cyclic_lr(epoch - cycle_start_epoch, **cyclic_lr_params)
+        if epoch <= cycle_start_end:
+            lr = cyclic_lr(epoch, **cyclic_lr_params)
         else:
-            lr = init_lr
+            lr = end_lr
 
         optimizer = init_optimizer(lr)
 
