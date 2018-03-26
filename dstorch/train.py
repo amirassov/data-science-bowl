@@ -32,7 +32,7 @@ def cyclic_lr(epoch, init_lr=5e-4, num_epochs_per_cycle=5, cycle_epochs_decay=2,
 
 
 def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, lr):
-    epoch, report_each, valid_losses = 1, 10, []
+    epoch, report_each, val_losses = 1, 10, []
     for epoch in range(epoch, n_epochs + 1):
         lr = cyclic_lr(epoch)
         optimizer = init_optimizer(lr)
@@ -65,10 +65,10 @@ def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init
             bar.close()
             valid_metrics = validation_binary(model, criterion, val_loader)
             valid_loss = valid_metrics['valid_loss']
-            valid_losses.append(valid_loss)
+            val_losses.append(valid_loss)
         
         except KeyboardInterrupt:
             bar.close()
             print('done.')
-            return valid_losses
-    return valid_losses
+            return val_losses
+    return val_losses
