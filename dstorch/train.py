@@ -30,7 +30,7 @@ def adjust_lr(epoch, init_lr=0.0005, num_epochs_per_decay=50, lr_decay_factor=0.
     return lr
 
 
-def cyclic_lr(epoch, init_lr=4e-4, num_epochs_per_cycle=5, cycle_epochs_decay=2, lr_decay_factor=0.5):
+def cyclic_lr(epoch, init_lr=3e-4, num_epochs_per_cycle=30, cycle_epochs_decay=10, lr_decay_factor=0.5):
     epoch_in_cycle = epoch % num_epochs_per_cycle
     lr = init_lr * (lr_decay_factor ** (epoch_in_cycle // cycle_epochs_decay))
     return lr
@@ -40,23 +40,11 @@ def train(
         model, n_epochs, batch_size,
         criterion, train_loader,
         val_loader, init_optimizer,
-        end_lr=0.0001, cyclic_lr_params=None, cycle_start_end=100
+        cyclic_lr_params=None
 ):
-    # if cyclic_lr_params is None:
-    #     cyclic_lr_params = {
-    #         'init_lr': 0.0005,
-    #         'num_epochs_per_cycle': 5,
-    #         'cycle_epochs_decay': 2,
-    #         'lr_decay_factor': 0.4
-    #     }
-
     report_each, val_losses = 10, []
     for epoch in range(1, n_epochs + 1):
-        if epoch <= 100:
-            lr = 0.0005
-        else:
-            lr = 0.0001
-
+        lr = cyclic_lr(epoch, **cyclic_lr_params)
         optimizer = init_optimizer(lr)
 
         model.train()
