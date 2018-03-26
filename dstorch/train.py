@@ -40,7 +40,7 @@ def train(
         model, n_epochs, batch_size,
         criterion, train_loader,
         val_loader, init_optimizer,
-        init_lr=0.0005, cyclic_lr_params=None, cycle_start_epoch=75
+        init_lr=0.0003, cyclic_lr_params=None, cycle_start_epoch=50
 ):
     if cyclic_lr_params is None:
         cyclic_lr_params = {
