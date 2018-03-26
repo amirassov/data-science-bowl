@@ -44,7 +44,11 @@ def train(
 ):
     report_each, val_losses = 10, []
     for epoch in range(1, n_epochs + 1):
-        lr = cyclic_lr(epoch, **cyclic_lr_params)
+        # lr = cyclic_lr(epoch, **cyclic_lr_params)
+        if epoch < 100:
+            lr = 0.0003
+        else:
+            lr = 0.0001
         optimizer = init_optimizer(lr)
 
         model.train()
