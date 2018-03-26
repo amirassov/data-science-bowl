@@ -41,7 +41,7 @@ def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init
         }
     report_each, val_losses = 10, []
     for epoch in range(1, n_epochs + 1):
-        lr = np.arange(0, 0.001, 0.00005)[epoch]
+        lr = np.arange(0.00001, 7e-04, 0.00002)[epoch - 1]
         optimizer = init_optimizer(lr)
         
         model.train()
