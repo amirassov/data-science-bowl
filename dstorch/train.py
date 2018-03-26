@@ -41,19 +41,19 @@ def train(
         criterion, train_loader,
         val_loader, init_optimizer,
         cyclic_lr_params=None, adjust_lr_params=None,
-        cycle_start_epoch=100
+        cycle_start_epoch=75
 ):
     if cyclic_lr_params is None:
         cyclic_lr_params = {
-            'init_lr': 4e-4,
+            'init_lr': 0.0005,
             'num_epochs_per_cycle': 5,
             'cycle_epochs_decay': 2,
-            'lr_decay_factor': 0.5
+            'lr_decay_factor': 0.1
         }
     if adjust_lr_params is None:
         adjust_lr_params = {
             'init_lr': 0.0005,
-            'num_epochs_per_decay': 50,
+            'num_epochs_per_decay': 25,
             'lr_decay_factor': 0.2,
         }
         
