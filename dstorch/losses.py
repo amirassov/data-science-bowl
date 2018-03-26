@@ -46,5 +46,5 @@ class BCEDiceLossCenterContour(nn.Module):
         loss = self.weights['mask'] * self.bce_dice(mask_input, mask_target)
         loss += self.weights['center'] * self.bce_dice(center_input, center_target)
         loss += self.weights['contour'] * self.bce_dice(contour_input, contour_target)
-        loss += self.weights['add'] * self.bce_dice(center_input, center_target)
+        loss += self.weights['add'] * self.bce_dice(torch.add(center_input, contour_input), mask_target)
         return loss
