@@ -41,7 +41,7 @@ def train(
         criterion, train_loader,
         val_loader, init_optimizer,
         cyclic_lr_params=None, adjust_lr_params=None,
-        cycle_start_epoch=50, init_lr=0.0001
+        cycle_start_epoch=100
 ):
     if cyclic_lr_params is None:
         cyclic_lr_params = {
