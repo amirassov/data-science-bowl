@@ -45,20 +45,23 @@ class BCEDiceLossMulti(nn.Module):
         return loss / self.num_classes
 
 
-class BCEDiceLossCenter(nn.Module):
+class BCEDiceLossCenters(nn.Module):
     def __init__(self):
         super().__init__()
         self.bce_dice = BCEDiceLoss()
     
     def forward(self, input, target):
         mask_input, mask_target = input[:, 0], target[:, 0]
-        center_input, center_target = input[:, 1], target[:, 1]
-        center_1_input, center_1_target = input[:, 2], target[:, 2]
+        center_input_02, center_target_02 = input[:, 1], target[:, 1]
+        center_input_04, center_target_04 = input[:, 2], target[:, 2]
+        center_input_06, center_target_06 = input[:, 3], target[:, 3]
         
         loss = 0.5 * self.bce_dice(mask_input, mask_target)
-        loss += 0.3 * self.bce_dice(center_input, center_target)
-        loss += 0.2 * self.bce_dice(center_1_input, center_1_target)
-        return loss / (0.5 + 0.3 + 0.2)
+        loss += 0.1 * self.bce_dice(center_input_02, center_target_02)
+        loss += 0.1 * self.bce_dice(center_input_04, center_target_04)
+        loss += 0.3 * self.bce_dice(center_input_06, center_target_06)
+        
+        return loss / (0.5 + 0.3 + 0.1 + 0.1)
 
 
 class BCEDiceLossCenterContoursAdd(nn.Module):
