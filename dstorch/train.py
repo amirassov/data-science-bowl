@@ -25,26 +25,47 @@ def validation_binary(model: nn.Module, criterion, val_loader):
     return metrics
 
 
+def adjust_lr(epoch, init_lr=0.0005, num_epochs_per_decay=50, lr_decay_factor=0.2):
+    lr = init_lr * (lr_decay_factor ** (epoch // num_epochs_per_decay))
+    return lr
+
+
 def cyclic_lr(epoch, init_lr=4e-4, num_epochs_per_cycle=5, cycle_epochs_decay=2, lr_decay_factor=0.5):
     epoch_in_cycle = epoch % num_epochs_per_cycle
     lr = init_lr * (lr_decay_factor ** (epoch_in_cycle // cycle_epochs_decay))
     return lr
 
 
-def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init_optimizer, cyclic_lr_params=None):
+def train(
+        model, n_epochs, batch_size,
+        criterion, train_loader,
+        val_loader, init_optimizer,
+        cyclic_lr_params=None, adjust_lr_params=None,
+        cycle_start_epoch=50, init_lr=0.0001
+):
     if cyclic_lr_params is None:
         cyclic_lr_params = {
-            'init_lr': 5e-4,
+            'init_lr': 4e-4,
             'num_epochs_per_cycle': 5,
             'cycle_epochs_decay': 2,
-            'lr_decay_factor': 0.25
+            'lr_decay_factor': 0.5
+        }
+    if adjust_lr_params is None:
+        adjust_lr_params = {
+            'init_lr': 0.0005,
+            'num_epochs_per_decay': 50,
+            'lr_decay_factor': 0.2,
         }
         
     report_each, val_losses = 10, []
     for epoch in range(1, n_epochs + 1):
-        lr = cyclic_lr(epoch, **cyclic_lr_params)
+        if epoch >= cycle_start_epoch:
+            lr = cyclic_lr(epoch - cycle_start_epoch, **cyclic_lr_params)
+        else:
+            lr = adjust_lr(epoch, **adjust_lr_params)
+
         optimizer = init_optimizer(lr)
-        
+
         model.train()
         random.seed()
         
@@ -52,7 +73,7 @@ def train(model, n_epochs, batch_size, criterion, train_loader, val_loader, init
         bar.set_description('Epoch {}, lr {}'.format(epoch, lr))
         losses = []
         _train_loader = train_loader
-        
+
         try:
             for i, (inputs, targets) in enumerate(_train_loader):
                 inputs, targets = variable(inputs), variable(targets)
