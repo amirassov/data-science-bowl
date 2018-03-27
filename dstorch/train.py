@@ -191,7 +191,7 @@ def train(
         drop_last=True, num_workers=num_workers, pin_memory=torch.cuda.is_available()
     )
     val_loader = DataLoader(
-        dataset=val_dataset, batch_size=batch_size, shuffle=False,
+        dataset=val_dataset, batch_size=1, shuffle=False,
         drop_last=False, num_workers=num_workers, pin_memory=torch.cuda.is_available()
     )
     
