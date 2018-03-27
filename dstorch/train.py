@@ -2,7 +2,6 @@ import os
 from collections import defaultdict
 from copy import deepcopy
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import nn
@@ -12,7 +11,7 @@ from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
-from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters
+from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss
 from dstorch.models import TernausNet34
 from dstorch.utils import variable
 from dstorch.dataset import TrainDataset, ValDataset
@@ -107,7 +106,7 @@ class PytorchTrain:
         
         report['loss'] = loss.data
         for name, func in self.metrics:
-            report[name] = func(F.sigmoid(predictions), masks).data
+            report[name] = func(predictions, masks).data
         
         loss.backward()
         torch.nn.utils.clip_grad_norm(self.model.parameters(), 1.0)
@@ -187,14 +186,15 @@ def train(
         drop_last=True, num_workers=num_workers, pin_memory=torch.cuda.is_available()
     )
     val_loader = DataLoader(
-        dataset=val_dataset, batch_size=1, shuffle=False,
-        drop_last=False, num_workers=num_workers, pin_memory=torch.cuda.is_available()
+        dataset=val_dataset, shuffle=False, drop_last=False,
+        num_workers=num_workers, pin_memory=torch.cuda.is_available()
     )
     
     trainer = PytorchTrain(
         **train_args,
         metrics=[
-            ('bce', nn.modules.loss.BCELoss())
+            ('bce', nn.modules.loss.BCEWithLogitsLoss()),
+            ('dice', DiceLoss())
         ]
     )
     
