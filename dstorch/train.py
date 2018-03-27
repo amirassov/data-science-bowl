@@ -126,7 +126,7 @@ class PytorchTrain:
         
         for name, func in self.metrics:
             report[name] = func(
-                F.sigmoid(prediction)[:, :, top:height + top, left:width + left].contiguous(),
+                prediction[:, :, top:height + top, left:width + left].contiguous(),
                 mask[:, :, top:height + top, left:width + left].contiguous()
             ).data
         
