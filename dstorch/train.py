@@ -50,10 +50,10 @@ class PytorchTrain:
     ):
         self.model_name = model_name
         self.nb_epoch = nb_epoch
-        self.log_dir = os.path.join(self.log_dir, model_name)
+        self.log_dir = os.path.join(log_dir, model_name)
         os.makedirs(log_dir, exist_ok=True)
         
-        self.model_dir = os.path.join(self.model_dir, model_name)
+        self.model_dir = os.path.join(model_dir, model_name)
         os.makedirs(model_dir, exist_ok=True)
         self.model = models[network](**network_args)
         self.lr = lr
