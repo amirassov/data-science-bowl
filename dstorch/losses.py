@@ -31,13 +31,14 @@ class BCEDiceLoss(nn.Module):
         return self.bce(input, target) - torch.log(self.dice(input, target))
 
 
-class BCEDiceLossOneClass(BCEDiceLoss):
-    def __init__(self, cls=0):
+class BCEDiceLossOneClass(nn.Module):
+    def __init__(self, cls):
         super().__init__()
+        self.bce_dice = BCEDiceLoss()
         self.cls = cls
 
     def forward(self, input, target):
-        return self(input[:, self.cls], target[:, self.cls])
+        return self.bce_dice(input[:, self.cls], target[:, self.cls])
 
 
 class BCEDiceLossCenters(nn.Module):
