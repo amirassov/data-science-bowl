@@ -3,7 +3,6 @@ from collections import defaultdict
 from copy import deepcopy
 
 import torch
-import torch.nn.functional as F
 from torch import nn
 from torch.optim import Adam
 from torch.utils.data import DataLoader
@@ -11,7 +10,7 @@ from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
 
-from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss
+from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss, BCEDiceLossOneClass
 from dstorch.models import TernausNet34
 from dstorch.utils import variable
 from dstorch.dataset import TrainDataset, ValDataset
@@ -194,7 +193,10 @@ def train(
         **train_args,
         metrics=[
             ('bce', nn.modules.loss.BCEWithLogitsLoss()),
-            ('dice', DiceLoss())
+            ('dice', DiceLoss()),
+            ('0 class', BCEDiceLossOneClass()),
+            ('1 class', BCEDiceLossOneClass(1)),
+            ('2 class', BCEDiceLossOneClass(2)),
         ]
     )
     

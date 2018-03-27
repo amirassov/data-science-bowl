@@ -7,7 +7,7 @@ def dice_loss(input, target):
     EPS = 1.0
     dice_target = (target == 1).float()
     dice_input = F.sigmoid(input)
-    
+
     intersection = (dice_target * dice_input).sum() + EPS
     union = dice_target.sum() + dice_input.sum() + EPS
     return 2.0 * intersection / union
@@ -20,16 +20,24 @@ class DiceLoss(nn.Module):
     def forward(self, input, target):
         return dice_loss(input, target)
 
-
+    
 class BCEDiceLoss(nn.Module):
-    def __init__(self, size_average=True):
+    def __init__(self):
         super().__init__()
-        self.size_average = size_average
         self.dice = DiceLoss()
         self.bce = nn.modules.loss.BCEWithLogitsLoss()
 
     def forward(self, input, target):
         return self.bce(input, target) - torch.log(self.dice(input, target))
+
+
+class BCEDiceLossOneClass(BCEDiceLoss):
+    def __init__(self, cls=0):
+        super().__init__()
+        self.cls = cls
+
+    def forward(self, input, target):
+        return self(input[:, self.cls], target[:, self.cls])
 
 
 class BCEDiceLossCenters(nn.Module):
