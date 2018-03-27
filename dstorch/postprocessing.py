@@ -1,9 +1,7 @@
-import cv2
 import numpy as np
 import scipy.ndimage as nd
-from skimage import img_as_bool, img_as_ubyte
+from skimage import img_as_ubyte
 from skimage import morphology
-from skimage.feature import peak_local_max
 from skimage.filters import gaussian
 
 
@@ -12,7 +10,7 @@ def remove_smalls(mask, width_holes, width_objects):
         mask.astype(bool),
         min_size=width_holes ** 3
     )
-    
+
     remove_objects = morphology.remove_small_objects(
         remove_holes.astype(bool),
         min_size=width_objects ** 3
@@ -38,26 +36,26 @@ def pad_zero(image, padding_size, padding=True):
 
 def watershed(
         prediction,
-        mask_threshold=0.7,
-        center_threshold=0.7,
-        width_holes=4,
-        width_objects=3,
-        padding_size=5,
-        min_size=50
+        mask_threshold=0.5, center_threshold=0.7, width_holes=4,
+        width_objects=3, padding_size=5, min_size=16
 ):
-    pred_mask, pred_center, pred_contour = prediction[..., 0], prediction[..., 1], prediction[..., 2]
+    pred_mask = prediction[..., 0]
+    pred_center = prediction[..., 1]
+
     mask = img_as_ubyte(pred_mask > mask_threshold)
     center = img_as_ubyte(pred_center > center_threshold)
     _, mask = remove_smalls(mask, width_holes, width_objects)
-    
-    markers = nd.label(pad_zero(center, 5))[0]
-    
+
+    padded_mask = pad_zero(mask, padding_size=padding_size)
+    padded_center = pad_zero(center, padding_size=padding_size)
+
+    markers = nd.label(padded_center)[0]
+
     watershed_image = pad_zero(
-        morphology.watershed(-pad_zero(pred_mask, padding_size=padding_size),
-                             markers, mask=pad_zero(mask, padding_size=padding_size)),
+        morphology.watershed(-padded_mask, markers, mask=padded_mask),
         padding_size=padding_size, padding=False
     )
-    
+
     unique, counts = np.unique(watershed_image, return_counts=True)
     for (k, v) in dict(zip(unique, counts)).items():
         if v < min_size:
