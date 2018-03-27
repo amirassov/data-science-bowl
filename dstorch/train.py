@@ -70,7 +70,10 @@ class PytorchTrain:
         epoch_report = defaultdict(float)
         
         if training:
-            progress_bar = tqdm(enumerate(loader), total=len(loader), desc="Epoch {}".format(epoch), ncols=0)
+            progress_bar = tqdm(
+                enumerate(loader), total=len(loader),
+                desc="Epoch {}, lr {}".format(epoch, self.lr), ncols=0
+            )
         else:
             progress_bar = enumerate(loader)
         
@@ -194,9 +197,9 @@ def train(
         metrics=[
             ('bce', nn.modules.loss.BCEWithLogitsLoss()),
             ('dice', DiceLoss()),
-            ('0 class', BCEDiceLossOneClass(0)),
-            ('1 class', BCEDiceLossOneClass(1)),
-            ('2 class', BCEDiceLossOneClass(2)),
+            ('0 cls', BCEDiceLossOneClass(0)),
+            ('1 cls', BCEDiceLossOneClass(1)),
+            ('2 cls', BCEDiceLossOneClass(2)),
         ]
     )
     
