@@ -50,11 +50,13 @@ class PytorchTrain:
     ):
         self.model_name = model_name
         self.nb_epoch = nb_epoch
+        
         self.log_dir = os.path.join(log_dir, model_name)
-        os.makedirs(log_dir, exist_ok=True)
+        os.makedirs(self.log_dir, exist_ok=True)
         
         self.model_dir = os.path.join(model_dir, model_name)
-        os.makedirs(model_dir, exist_ok=True)
+        os.makedirs(self.model_dir, exist_ok=True)
+        
         self.model = models[network](**network_args)
         self.lr = lr
         self.optimizer = Adam(self.model.parameters(), lr=lr)
@@ -105,8 +107,7 @@ class PytorchTrain:
         
         report['loss'] = loss.data
         for name, func in self.metrics:
-            metric = func(F.sigmoid(predictions), masks)
-            report[name] = metric.data
+            report[name] = func(F.sigmoid(predictions), masks).data
         
         loss.backward()
         torch.nn.utils.clip_grad_norm(self.model.parameters(), 1.0)
@@ -114,26 +115,21 @@ class PytorchTrain:
         return report
     
     def make_val_step(self, data):
-        report = defaultdict(list)
+        report = {}
         
-        images = variable(data['image'], volatile=True)
-        masks = variable(data['mask'], volatile=True)
+        top, left, height, width = data['top'][0], data['left'][0], data['height'][0], data['width'][0]
+        image = variable(data['image'], volatile=True)
+        mask = variable(data['mask'], volatile=True)
         
-        for image, mask, top, left, height, width in zip(images, masks, data['top'], data['left'],
-                                                         data['height'], data['width']):
-            prediction = self.model(image)
-            loss = self.criterion(prediction, mask)
-            report['loss'].append(loss.data)
-            
-            for name, func in self.metrics:
-                metric = func(
-                    F.sigmoid(prediction)[:, top:height + top, left:width + left].contiguous(),
-                    masks[:, top:height + top, left:width + left].contiguous()
-                )
-                report[name].append(metric.data)
+        prediction = self.model(image)
+        loss = self.criterion(prediction, mask)
+        report['loss'] = loss.data
         
-        for key, value in report.items():
-            report[key] = np.mean(value)
+        for name, func in self.metrics:
+            report[name] = func(
+                F.sigmoid(prediction)[:, :, top:height + top, left:width + left].contiguous(),
+                mask[:, :, top:height + top, left:width + left].contiguous()
+            ).data
         
         return report
     
