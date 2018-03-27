@@ -1,7 +1,6 @@
 from torch.nn import functional as F
 from tqdm import tqdm
 from dstorch.utils import variable
-from dstorch.dataset import make_loader
 import torch
 import numpy as np
 
@@ -33,11 +32,7 @@ def batch_predict(model, batch, flips=0):
     return to_numpy(pred1)
 
 def predict(model, filenames,  path_image, transform, batch_size, flips):
-    loader = make_loader(
-        filenames, path_image, path_mask=None,
-        batch_size=batch_size, transform=transform,
-        shuffle=False, mode='predict'
-    )
+    loader = None
     test_predictions = []
     test_names = []
 

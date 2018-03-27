@@ -37,7 +37,6 @@ class TrainDataset(BaseDataset):
 class ValDataset(BaseDataset):
     def __init__(self, ids, path_images, path_masks, transform, period):
         super().__init__(ids, path_images, transform)
-        self.ids = ids
         self.path_masks = path_masks
         self.period = period
 

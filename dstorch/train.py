@@ -180,7 +180,7 @@ class PytorchTrain:
 def train(
         train_args,
         train_ids, val_ids, path_images, path_masks,
-        batch_size=16, num_workers=0,
+        batch_size=16, num_workers=1,
         train_transforms=None, val_transforms=None, period=64,
 ):
     train_dataset = TrainDataset(train_ids, path_images, path_masks, train_transforms)
