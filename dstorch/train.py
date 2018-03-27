@@ -179,12 +179,12 @@ class PytorchTrain:
 
 def train(
         train_args,
-        ids, path_images, path_masks,
+        train_ids, val_ids, path_images, path_masks,
         batch_size=16, num_workers=0,
         train_transforms=None, val_transforms=None, period=64,
 ):
-    train_dataset = TrainDataset(ids, path_images, path_masks, train_transforms)
-    val_dataset = ValDataset(ids, path_images, path_masks, val_transforms, period)
+    train_dataset = TrainDataset(train_ids, path_images, path_masks, train_transforms)
+    val_dataset = ValDataset(val_ids, path_images, path_masks, val_transforms, period)
     
     train_loader = DataLoader(
         dataset=train_dataset, batch_size=batch_size, shuffle=True,
