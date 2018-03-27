@@ -194,7 +194,7 @@ def train(
         metrics=[
             ('bce', nn.modules.loss.BCEWithLogitsLoss()),
             ('dice', DiceLoss()),
-            ('0 class', BCEDiceLossOneClass()),
+            ('0 class', BCEDiceLossOneClass(0)),
             ('1 class', BCEDiceLossOneClass(1)),
             ('2 class', BCEDiceLossOneClass(2)),
         ]
