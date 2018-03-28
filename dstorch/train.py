@@ -142,7 +142,7 @@ class PytorchTrain:
         best_loss = float('inf')
         try:
             for epoch in range(self.nb_epoch):
-                lr = (1e-7 * (1.5 ** np.arange(23)))[epoch]
+                lr = np.repeat((1.5 ** np.arange(23)) * 1e-7, 2)[epoch]
                 for param_group in self.optimizer.param_groups:
                     param_group['lr'] = lr
                     
