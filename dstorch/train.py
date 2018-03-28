@@ -69,13 +69,13 @@ class PytorchTrain:
 
         self.cycle_start_epoch = cycle_start_epoch
     
-    def run_one_epoch(self, epoch, loader, training=True):
+    def run_one_epoch(self, epoch, lr, loader, training=True):
         epoch_report = defaultdict(float)
         
         if training:
             progress_bar = tqdm(
                 enumerate(loader), total=len(loader),
-                desc="Epoch {}, lr {}".format(epoch, self.lr), ncols=0
+                desc="Epoch {}, lr {}".format(epoch, lr), ncols=0
             )
         else:
             progress_bar = enumerate(loader)
@@ -147,10 +147,10 @@ class PytorchTrain:
                     param_group['lr'] = lr
                     
                 self.model.train()
-                train_metrics = self.run_one_epoch(epoch, train_loader)
+                train_metrics = self.run_one_epoch(epoch, lr, train_loader)
                 
                 self.model.eval()
-                val_metrics = self.run_one_epoch(epoch, val_loader, training=False)
+                val_metrics = self.run_one_epoch(epoch, lr, val_loader, training=False)
                 
                 print(" | ".join("{}: {:.5f}".format(key, float(value)) for key, value in val_metrics.items()))
                 
