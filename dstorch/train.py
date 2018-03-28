@@ -143,7 +143,9 @@ class PytorchTrain:
         try:
             for epoch in range(self.nb_epoch):
                 lr = (1e-7 * (1.5 ** np.arange(23)))[epoch]
-                
+                for param_group in self.optimizer.param_groups:
+                    param_group['lr'] = lr
+                    
                 self.model.train()
                 train_metrics = self.run_one_epoch(epoch, train_loader)
                 
