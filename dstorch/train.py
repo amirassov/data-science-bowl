@@ -15,6 +15,9 @@ from dstorch.models import TernausNet34
 from dstorch.utils import variable
 from dstorch.dataset import TrainDataset, ValDataset
 
+import numpy as np
+
+
 models = {
     'TernausNet34': TernausNet34
 }
@@ -54,16 +57,16 @@ class PytorchTrain:
         
         self.model_dir = os.path.join(model_dir, model_name)
         os.makedirs(self.model_dir, exist_ok=True)
-        
+
         self.model = models[network](**network_args)
         self.lr = lr
         self.optimizer = Adam(self.model.parameters(), lr=lr)
         self.model = nn.DataParallel(self.model).cuda()
-        
+
         self.criterion = losses[loss](**loss_args).cuda()
         self.writer = SummaryWriter(self.log_dir)
         self.metrics = metrics
-        
+
         self.cycle_start_epoch = cycle_start_epoch
     
     def run_one_epoch(self, epoch, loader, training=True):
@@ -139,13 +142,7 @@ class PytorchTrain:
         best_loss = float('inf')
         try:
             for epoch in range(self.nb_epoch):
-                if epoch == self.cycle_start_epoch:
-                    print("Starting cyclic lr")
-                    self.optimizer = Adam(self.model.parameters(), lr=self.lr)
-                if epoch >= self.cycle_start_epoch:
-                    lr = cyclic_lr(self.optimizer, epoch - self.cycle_start_epoch, init_lr=self.lr, lr_decay_factor=0.1)
-                else:
-                    lr = adjust_lr(self.optimizer, epoch, init_lr=self.lr, num_epochs_per_decay=12)
+                lr = (1e-7 * (1.5 ** np.arange(23)))[epoch]
                 
                 self.model.train()
                 train_metrics = self.run_one_epoch(epoch, train_loader)
@@ -158,8 +155,8 @@ class PytorchTrain:
                 for key, value in train_metrics.items():
                     self.writer.add_scalar('train/{}'.format(key), float(value), global_step=epoch)
                 
-                for k, v in val_metrics.items():
-                    self.writer.add_scalar('val/{}'.format(k), float(v), global_step=epoch)
+                for key, value in val_metrics.items():
+                    self.writer.add_scalar('val/{}'.format(key), float(value), global_step=epoch)
                 
                 self.writer.add_scalar('lr', float(lr), global_step=epoch)
                 
