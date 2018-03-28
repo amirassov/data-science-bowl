@@ -72,7 +72,6 @@ class TestDataset(BaseDataset):
         height, width = image.shape[:2]
         return {
             'image': to_float_tensor(pad_image),
-            'filename': str(filename),
             'top': top,
             'left': left,
             'height': height,

@@ -3,6 +3,8 @@ from tqdm import tqdm
 from dstorch.utils import variable
 import torch
 import numpy as np
+from dstorch.dataset import TestDataset
+from torch.utils.data import DataLoader
 
 
 def flip_tensor_lr(batch):
@@ -31,17 +33,22 @@ def batch_predict(model, batch, flips=0):
         return to_numpy(new_mask)
     return to_numpy(pred1)
 
-def predict(model, filenames,  path_image, transform, batch_size, flips):
-    loader = None
+def predict(model, ids,  path_images, transforms, period, flips, num_workers):
+    dataset = TestDataset(ids, path_images, transforms, period)
+
+    loader = DataLoader(
+        dataset=dataset, shuffle=False, drop_last=False,
+        num_workers=num_workers, pin_memory=torch.cuda.is_available()
+    )
+
     test_predictions = []
-    test_names = []
 
-    for inputs, names, tops, lefts, heights, widths in tqdm(loader, desc='Predict', total=len(filenames)):
-        inputs = variable(inputs, volatile=True)
-        outputs = batch_predict(model, inputs, flips=flips)
+    for data in tqdm(loader, desc='Predict', total=len(ids)):
+        images, tops, lefts, heights, widths = data['image'], data['top'], data['left'], data['height'], data['width']
+        inputs = variable(images, volatile=True)
+        predictions = batch_predict(model, inputs, flips=flips)
 
-        for i, output in enumerate(outputs):
-            prediction = np.moveaxis(output, 0, -1)
-            test_predictions.append(prediction[tops[i]:heights[i]+tops[i], lefts[i]:widths[i]+lefts[i]])
-            test_names.append(names[i])
-    return test_predictions, test_names
+        for i, prediction in enumerate(predictions):
+            prediction = np.moveaxis(prediction, 0, -1)
+            test_predictions.append(prediction[tops[i]:heights[i] + tops[i], lefts[i]:widths[i] + lefts[i]])
+    return test_predictions
