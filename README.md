@@ -28,3 +28,5 @@
 - [Cyclical Learning Rates for Training Neural Networks](https://arxiv.org/abs/1506.01186)
 - [Deep Watershed Transform for Instance Segmentation](https://arxiv.org/abs/1611.08303)
 - [MULTICLASS WEIGHTED LOSS FOR INSTANCE SEGMENTATION OF CLUTTERED CELLS](https://arxiv.org/abs/1802.07465)
+- [A DISCIPLINED APPROACH TO NEURAL NETWORK HYPER-PARAMETERS: PART 1 – LEARNING RATE, BATCH SIZE, MOMENTUM, AND WEIGHT DECAY](https://arxiv.org/abs/1803.09820)
+- [DON’T DECAY THE LEARNING RATE, INCREASE THE BATCH SIZE](https://arxiv.org/abs/1711.00489)
