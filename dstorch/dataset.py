@@ -68,10 +68,10 @@ class TestDataset(BaseDataset):
         image = cv2.imread(self.path_images.format(filename))
         image = self.transform(image)[0]
 
-        padded_mask, top, left = pad_image(image, self.period)
+        padded_image, top, left = pad_image(image, self.period)
         height, width = image.shape[:2]
         return {
-            'image': to_float_tensor(pad_image),
+            'image': to_float_tensor(padded_image),
             'top': top,
             'left': left,
             'height': height,
