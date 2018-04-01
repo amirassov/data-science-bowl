@@ -132,7 +132,7 @@ class DecoderBlock(nn.Module):
 
 
 class UNet11(nn.Module):
-    def __init__(self, num_filters=32, pretrained=False):
+    def __init__(self, num_classes=1, num_filters=32, pretrained=False):
         """
         :param num_classes:
         :param num_filters:
@@ -142,7 +142,7 @@ class UNet11(nn.Module):
         """
         super().__init__()
         self.pool = nn.MaxPool2d(2, 2)
-
+        self.num_classes = num_classes
         self.encoder = models.vgg11(pretrained=pretrained).features
 
         self.relu = self.encoder[1]
@@ -162,7 +162,7 @@ class UNet11(nn.Module):
         self.dec2 = DecoderBlock(num_filters * (4 + 2), num_filters * 2 * 2, num_filters)
         self.dec1 = ConvRelu(num_filters * (2 + 1), num_filters)
 
-        self.final = nn.Conv2d(num_filters, 1, kernel_size=1)
+        self.final = nn.Conv2d(num_filters, self.num_classes, kernel_size=1)
 
     def forward(self, x):
         conv1 = self.relu(self.conv1(x))
