@@ -299,19 +299,6 @@ class Normalize:
         img /= np.ones(img.shape) * self.std
         return img
 
-
-class DeNormalize:
-    def __init__(self, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)):
-        self.mean = mean
-        self.std = std
-
-    def __call__(self, img):
-        max_pixel_value = 255.0
-        img = img * np.ones(img.shape) * self.std
-        img += np.ones(img.shape) * self.mean
-        img = img.astype(np.float32) * max_pixel_value
-        return img
-
 class Distort1:
     """"
     ## unconverntional augmnet ################################################################################3

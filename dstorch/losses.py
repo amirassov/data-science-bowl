@@ -16,11 +16,11 @@ def dice_loss(input, target):
 class DiceLoss(nn.Module):
     def __init__(self):
         super().__init__()
-    
+
     def forward(self, input, target):
         return dice_loss(input, target)
 
-    
+
 class BCEDiceLoss(nn.Module):
     def __init__(self):
         super().__init__()
@@ -55,4 +55,18 @@ class BCEDiceLossCenters(nn.Module):
         loss = self.weights['mask'] * self.bce_dice(mask_input, mask_target)
         loss += self.weights['center'] * self.bce_dice(center_input, center_target)
         loss += self.weights['center_04'] * self.bce_dice(center_input_04, center_target_04)
+        return loss
+
+class BCEDiceLossMulti(nn.Module):
+    def __init__(self, num_cls, weights):
+        super().__init__()
+        self.bce_dice = BCEDiceLoss()
+        self.num_cls = num_cls
+        self.weights = weights
+
+    def forward(self, input, target):
+        loss = 0
+        for cls in range(self.num_cls):
+            channel_input, channel_target = input[:, cls], target[:, cls]
+            loss += self.weights[cls] * self.bce_dice(channel_input, channel_target)
         return loss

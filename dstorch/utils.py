@@ -1,10 +1,9 @@
+import cv2
 import numpy as np
+import pandas as pd
 import torch
 from torch.autograd import Variable
-import cv2
-import pandas as pd
 from tqdm import tqdm
-from skimage import img_as_bool, img_as_ubyte
 
 
 def variable(x, volatile=False):
@@ -24,11 +23,11 @@ def pad_image(image, period):
     lr = np.ceil(h / period) * period - h
     left = int(np.ceil(lr / 2))
     right = int(lr - left)
-    
+
     tb = np.ceil(w / period) * period - w
     top = int(np.ceil(tb / 2))
     bottom = int(tb - top)
-    
+
     return cv2.copyMakeBorder(
         image, top, bottom, left, right,
         cv2.BORDER_REFLECT_101
@@ -100,28 +99,3 @@ def mask2rle(predictions, ids, postprocess_function, **kwargs):
         rles.extend(rle)
         mask_ids.extend([id_] * len(rle))
     return mask_ids, rles
-
-def invert_images(classes: pd.DataFrame, images: list, ids: list, invert_colors=('white', 'yellow', 'purple')):
-    inverts = []
-    for image, _id in zip(images, ids):
-        if classes.loc[classes['id'] == _id, 'background'].iloc[0] in invert_colors:
-            inverts.append(255 - image)
-        else:
-            inverts.append(image)
-    return inverts
-
-def label2contour(label, kernel):
-    contour = np.zeros_like(label, dtype=bool)
-    for i in np.unique(label):
-        if i:
-            instance = img_as_ubyte(label == i)
-            contour += img_as_bool(cv2.morphologyEx(
-                instance, cv2.MORPH_GRADIENT, kernel=kernel))
-    return contour
-
-def get_contours(labels, kernel=np.ones((5, 5))):
-    contours = []
-    for label in tqdm(labels):
-        contour = label2contour(label, kernel)
-        contours.append(contour)
-    return contours

@@ -1,8 +1,6 @@
-from collections import defaultdict
-
 import numpy as np
 from tqdm import tqdm_notebook
-
+from collections import defaultdict
 
 def get_ious(y_true, y_pred):
     ious = []
@@ -39,4 +37,12 @@ def get_scores(gt_labels, name2predictions):
             name2scores[name].append(score)
             print("{}: {}: {}, mean: {}".format(i, name, score, np.mean(name2scores[name])))
     return name2scores
+
+def get_labels(labeled_image):
+    labels = []
+    for i in np.unique(labeled_image):
+        if i:
+            mask = labeled_image == i
+            labels.append(mask)
+    return np.array(labels)
 

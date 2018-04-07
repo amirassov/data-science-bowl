@@ -18,37 +18,50 @@ class BaseDataset(Dataset):
 
 
 class TrainDataset(BaseDataset):
-    def __init__(self, ids, path_images, path_masks, transform):
+    def __init__(self, ids, path_images, path_masks, transform, min_size=256):
         super().__init__(ids, path_images, transform)
         self.path_masks = path_masks
+        self.min_size = min_size
 
     def __getitem__(self, index):
         filename = self.ids[index]
         image = cv2.imread(self.path_images.format(filename))
         mask = cv2.imread(self.path_masks.format(filename), cv2.IMREAD_UNCHANGED)
+
+        if min(image.shape[:2]) < self.min_size:
+            image, top, left = pad_image(image, self.min_size)
+            mask, top, left = pad_image(mask, self.min_size)
+
         image, mask = self.transform(image, mask)
 
         return {
             'image': to_float_tensor(image),
             'mask': to_float_tensor(mask)
         }
-        
+
 
 class ValDataset(BaseDataset):
-    def __init__(self, ids, path_images, path_masks, transform, period):
+    def __init__(self, ids, path_images, path_masks, transform, period, min_size=256):
         super().__init__(ids, path_images, transform)
         self.path_masks = path_masks
         self.period = period
+        self.min_size = min_size
 
     def __getitem__(self, index):
         filename = self.ids[index]
         image = cv2.imread(self.path_images.format(filename))
         mask = cv2.imread(self.path_masks.format(filename), cv2.IMREAD_UNCHANGED)
+
+        if min(image.shape[:2]) < self.min_size:
+            image, top, left = pad_image(image, self.min_size)
+            mask, top, left = pad_image(mask, self.min_size)
+
         image, mask = self.transform(image, mask)
 
         padded_image, top, left = pad_image(image, self.period)
         padded_mask, top, left = pad_image(mask, self.period)
         height, width = image.shape[:2]
+
         return {
             'image': to_float_tensor(padded_image),
             'mask': to_float_tensor(padded_mask),
@@ -57,6 +70,7 @@ class ValDataset(BaseDataset):
             'height': height,
             'width': width
         }
+
 
 class TestDataset(BaseDataset):
     def __init__(self, ids, path_images, transform, period):

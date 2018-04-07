@@ -1,3 +1,5 @@
+# Based on https://github.com/asanakoy/kaggle_carvana_segmentation/blob/master/albu/src/eval.py
+
 from torch.nn import functional as F
 from tqdm import tqdm
 from dstorch.utils import variable
