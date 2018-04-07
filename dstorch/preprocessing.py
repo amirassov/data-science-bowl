@@ -72,11 +72,11 @@ def prepare_data(
         test_images = invert_images(test_images)
 
     if distance_path:
-        distances = get_distances(labels)
-    else:
         distances = []
         for _id in tqdm(ids, "Read distances"):
             distances.append(cv2.imread(os.path.join(distance_path, "{}.png".format(_id)), cv2.IMREAD_UNCHANGED) / 255)
+    else:
+        distances = get_distances(labels)
 
     centers = []
     for threshold in center_thresholds:
