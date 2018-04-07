@@ -30,7 +30,7 @@ def get_distances(labels):
 
 def invert_images(images: list):
     inverts = []
-    for image, _id in zip(images):
+    for image in images:
         if np.mean(image[..., 0]) > 100:
             inverts.append(255 - image)
         else:
@@ -55,8 +55,9 @@ def get_scale_df(ids, images, labels_file, size):
     return df_scale
 
 def prepare_data(
-        train_path, test_path, extra_path, output_path,
-        invert, center_thresholds, contour_thresholds, scale, labels_file, test_labels_file, size):
+        train_path, test_path, extra_path, output_path, distance_path,
+        invert, center_thresholds, contour_thresholds,
+        scale, labels_file, test_labels_file, size):
     ids, images, masks, labels = io.read_train_data(train_path)
     test_ids, test_images = io.read_test_data(test_path)
     extra_ids, extra_images, extra_masks, extra_labels = io.read_train_data(extra_path)
@@ -70,7 +71,12 @@ def prepare_data(
         images = invert_images(images)
         test_images = invert_images(test_images)
 
-    distances = get_distances(labels)
+    if distance_path:
+        distances = get_distances(labels)
+    else:
+        distances = []
+        for _id in tqdm(ids, "Read distances"):
+            distances.append(cv2.imread(os.path.join(distance_path, "{}.png".format(_id)), cv2.IMREAD_UNCHANGED) / 255)
 
     centers = []
     for threshold in center_thresholds:
