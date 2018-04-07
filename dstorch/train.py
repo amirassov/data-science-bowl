@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from dstorch.dataset import TrainDataset, ValDataset
-from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss, BCEDiceLossOneClass
+from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss, BCEDiceLossOneClass, BCEDiceLossMulti
 from dstorch.models import TernausNet34
 from dstorch.utils import variable
 
@@ -22,7 +22,8 @@ models = {
 
 losses = {
     'BCEDiceLoss': BCEDiceLoss,
-    'BCEDiceLossCenters': BCEDiceLossCenters
+    'BCEDiceLossCenters': BCEDiceLossCenters,
+    'BCEDiceLossMulti': BCEDiceLossMulti
 }
 
 def cyclic_lr(epoch, init_lr=1e-3, num_epochs_per_cycle=5, cycle_epochs_decay=2, lr_decay_factor=0.3):
