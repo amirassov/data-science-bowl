@@ -58,15 +58,15 @@ class BCEDiceLossCenters(nn.Module):
         return loss
 
 class BCEDiceLossMulti(nn.Module):
-    def __init__(self, num_cls, weights):
+    def __init__(self, num_classes, weights):
         super().__init__()
         self.bce_dice = BCEDiceLoss()
-        self.num_cls = num_cls
+        self.num_classes = num_classes
         self.weights = weights
 
     def forward(self, input, target):
         loss = 0
-        for cls in range(self.num_cls):
+        for cls in range(self.num_classes):
             channel_input, channel_target = input[:, cls], target[:, cls]
             loss += self.weights[cls] * self.bce_dice(channel_input, channel_target)
         return loss
