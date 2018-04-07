@@ -181,7 +181,7 @@ class PytorchTrain:
                 cycle_epochs_decay = self.lr_args['cycle_epochs_decay']
                 global_num_epochs_per_cycle = self.lr_args['global_num_epochs_per_cycle']
 
-                if not ((epoch + num_epochs_per_cycle * cycle_epochs_decay) % global_num_epochs_per_cycle):
+                if not ((epoch + num_epochs_per_cycle * cycle_epochs_decay + 1) % global_num_epochs_per_cycle):
                     torch.save(deepcopy(self.model), os.path.join(self.model_dir, 'local_{}.pth'.format(epoch)))
 
         except KeyboardInterrupt:
