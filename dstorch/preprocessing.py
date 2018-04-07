@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import scipy.ndimage as nd
 from tqdm import tqdm
-
+from skimage import img_as_ubyte
 from dstorch import io
 
 
@@ -97,10 +97,10 @@ def prepare_data(
     path_test = os.path.join(output_path, "test")
     os.makedirs(path_test, exist_ok=True)
 
-    for image, mask, dist, _id in tqdm(zip(images, answers, distances, ids), total=len(ids), desc='Save train data'):
+    for image, answer, dist, _id in tqdm(zip(images, answers, distances, ids), total=len(ids), desc='Save train data'):
         cv2.imwrite(os.path.join(path_images, "{}.png".format(_id)), image)
-        cv2.imwrite(os.path.join(path_masks, "{}.png".format(_id)), dist)
-        cv2.imwrite(os.path.join(path_distances, "{}.png".format(_id)), mask)
+        cv2.imwrite(os.path.join(path_masks, "{}.png".format(_id)), answer)
+        cv2.imwrite(os.path.join(path_distances, "{}.png".format(_id)), img_as_ubyte(dist))
 
     for image, _id in tqdm(zip(test_images, test_ids), total=len(test_ids), desc='Save test data'):
         cv2.imwrite(os.path.join(path_test, "{}.png".format(_id)), image)
@@ -112,7 +112,7 @@ def prepare_data(
         os.makedirs(path_masks, exist_ok=True)
         path_test = os.path.join(output_path, "scaled_test")
         os.makedirs(path_test, exist_ok=True)
-        
+
         df_scale = get_scale_df(ids, images, labels_file, size)
         for _id, img, answer in tqdm(zip(ids, images, answers), total=len(ids), desc='Scale & save train data'):
             height = df_scale.loc[df_scale['ImageId'] == _id, 'scale_height'].iloc[0]
