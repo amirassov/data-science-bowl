@@ -80,6 +80,27 @@ VerticalFlip, HorizontalFlip, Transpose, ShiftScaleRotate, Distort1, RandomBrigh
 ![result_3](images/result_3.png)
 
 
+## Инструкция
+#### Подготовка данных
+1. Обработка дополнительных данных: `data_1_extra_data.ipynb`
+1. Сохранение выборки для обучения модели без масштабирования, где ответами являются маска, центр (`threshold=0.5`) и граница: `data_0_without_scale_05.ipynb`
+1. Масштабирование клеток обучающей и дополнительной выборки: `data_0_scale.ipynb`
+1. Сохранение выборки для обучения модели с масштабированием, где ответами являются маска, центр (`threshold=0.5`)  и граница: `data_2_with_scale_05.ipynb`
+1. Сохранение выборки для обучения модели с масштабированием, где ответами являются маска и два центра (`threshold = 0.5 и 0.3`) : `data_3_with_scale_05_03_only_centers.ipynb`
+
+#### Обучение моделей
+1. Обучение TernausNet34 на `data_0_without_scale_05`: `train_0_without_scale_05.ipynb`
+1. Обучение TernausNet34 на `data_2_with_scale_05`: `train_0_with_scale_05.ipynb`
+1. Обучение TernausNet34 на `data_3_with_scale_05_03_only_centers`: `train_0_with_scale_05_03_only_centers.ipynb`
+1. Обучение TernausNet11 на `data_2_with_scale_05`: `train_0_with_scale_05_vgg11-600.ipynb`
+1. Обучение TernausNet34 без размораживания весов на `data_2_with_scale_05`: `train_0_with_scale_not_pretrained.ipynb`
+
+#### Предсказание
+1. Предсказание ответов для теста без масштабирования: `test_without_scale_predict.ipynb`
+1. Подготовка тестовых данных с масштабированием: `data_with_scale_test.ipynb`
+1. Итоговые предсказания для теста и ансамблирование: `test_predict.ipynb`
+
+
 ## Ссылки:
 - https://github.com/ternaus/TernausNet
 - https://github.com/ternaus/robot-surgery-segmentation
