@@ -7,7 +7,7 @@ from copy import deepcopy
 import torch
 from tensorboardX import SummaryWriter
 from torch import nn
-from torch.optim import Adam
+from torch.optim import Adam, SGD, RMSprop
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
@@ -20,6 +20,13 @@ models = {
     'TernausNet34': TernausNet34,
     'UNet11': UNet11
 }
+
+optimizers = {
+    'Adam': Adam,
+    'SGD': SGD,
+    'RMSprop': RMSprop
+}
+
 
 losses = {
     'BCEDiceLoss': BCEDiceLoss,
@@ -55,8 +62,7 @@ def cyclic_adjust_lr(
 class PytorchTrain:
     def __init__(
             self, model_name, network, nb_epoch, loss,
-            lr_args, model_dir, log_dir, metrics, network_args, loss_args,
-            cycle_start_epoch
+            lr_args, model_dir, log_dir, metrics, network_args, loss_args, optimizer
     ):
         self.model_name = model_name
         self.nb_epoch = nb_epoch
@@ -69,14 +75,12 @@ class PytorchTrain:
 
         self.model = models[network](**network_args)
         self.lr_args = lr_args
-        self.optimizer = Adam(self.model.parameters())
+        self.optimizer = optimizers['optimizer'](self.model.parameters())
         self.model = nn.DataParallel(self.model).cuda()
 
         self.criterion = losses[loss](**loss_args).cuda()
         self.writer = SummaryWriter(self.log_dir)
         self.metrics = metrics
-
-        self.cycle_start_epoch = cycle_start_epoch
 
     def run_one_epoch(self, epoch, lr, loader, training=True):
         epoch_report = defaultdict(float)
