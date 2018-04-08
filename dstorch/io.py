@@ -20,7 +20,7 @@ def read_test_data(test_path, scale_path=None, d=3):
         if scale_path:
             height = df_scale.loc[df_scale['ImageId'] == id_, 'scale_height'].iloc[0]
             width = df_scale.loc[df_scale['ImageId'] == id_, 'scale_width'].iloc[0]
-            image = cv2.resize(image, (width, height), cv2.INTER_NEAREST)
+            image = cv2.resize(image, (width, height))
 
         test_images.append(image)
     return test_ids, test_images
@@ -42,7 +42,7 @@ def read_train_data(train_path, scale_path=None, d=3):
         if scale_path:
             height = df_scale.loc[df_scale['ImageId'] == id_, 'scale_height'].iloc[0]
             width = df_scale.loc[df_scale['ImageId'] == id_, 'scale_width'].iloc[0]
-            image = cv2.resize(image, (width, height), cv2.INTER_NEAREST)
+            image = cv2.resize(image, (width, height))
         else:
             height = None
             width = None
@@ -54,7 +54,7 @@ def read_train_data(train_path, scale_path=None, d=3):
             mask_ = img_as_float(cv2.imread(path + '/masks/' + mask_file))
 
             if scale_path:
-                mask_ = cv2.resize(mask_, (width, height), cv2.INTER_NEAREST)
+                mask_ = cv2.resize(mask_, (width, height))
 
             if len(mask_.shape) > 2:
                 mask_ = mask_[..., 0]
