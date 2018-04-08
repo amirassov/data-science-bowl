@@ -51,7 +51,7 @@ def read_train_data(train_path, scale_path=None, d=3):
         mask = None
         label = None
         for i, mask_file in enumerate(next(os.walk(path + '/masks/'))[2]):
-            mask_ = img_as_bool(cv2.imread(path + '/masks/' + mask_file))
+            mask_ = img_as_float(cv2.imread(path + '/masks/' + mask_file))
 
             if scale_path:
                 mask_ = cv2.resize(mask_, (width, height), cv2.INTER_NEAREST)
