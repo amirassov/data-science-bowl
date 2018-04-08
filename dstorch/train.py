@@ -13,11 +13,12 @@ from tqdm import tqdm
 
 from dstorch.dataset import TrainDataset, ValDataset
 from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss, BCEDiceLossOneClass, BCEDiceLossMulti
-from dstorch.models import TernausNet34
+from dstorch.models import TernausNet34, UNet11
 from dstorch.utils import variable
 
 models = {
-    'TernausNet34': TernausNet34
+    'TernausNet34': TernausNet34,
+    'UNet11': UNet11
 }
 
 losses = {
