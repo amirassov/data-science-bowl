@@ -75,7 +75,7 @@ class PytorchTrain:
 
         self.model = models[network](**network_args)
         self.lr_args = lr_args
-        self.optimizer = optimizers['optimizer'](self.model.parameters())
+        self.optimizer = optimizers[optimizer](self.model.parameters())
         self.model = nn.DataParallel(self.model).cuda()
 
         self.criterion = losses[loss](**loss_args).cuda()
