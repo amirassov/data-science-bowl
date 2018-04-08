@@ -62,10 +62,10 @@ def read_train_data(train_path, scale_path=None, d=3):
                 mask = np.zeros_like(mask_)
 
             if label is None:
-                label = np.zeros_like(mask_, dtype=int)
+                label = np.zeros_like(mask_, dtype=float)
 
             mask = np.maximum(mask, mask_)
             label += (i + 1) * mask_
         train_masks.append(img_as_float(mask))
-        train_labels.append(label)
+        train_labels.append(img_as_ubyte(label))
     return train_ids, train_images, train_masks, train_labels
