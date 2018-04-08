@@ -129,6 +129,7 @@ def prepare_data(
 
             cv2.imwrite(os.path.join(path_test, "{}.png".format(_id)), cv2.resize(img, (width, height)))
 
+# for backward compatibility
 def prepare_train_data(
         train_path, extra_path, output_path, distance_path,
         invert, center_thresholds, contour_thresholds,
@@ -189,6 +190,7 @@ def prepare_train_data(
             cv2.imwrite(os.path.join(path_images, "{}.png".format(_id)), cv2.resize(img, (width, height)))
             cv2.imwrite(os.path.join(path_masks, "{}.png".format(_id)), cv2.resize(answer, (width, height)))
 
+# for backward compatibility
 def prepare_test_data(
         test_path, output_path, invert, scale, test_labels_file, size):
     test_ids, test_images = io.read_test_data(test_path)
@@ -212,3 +214,61 @@ def prepare_test_data(
             width = df_scale_test.loc[df_scale_test['ImageId'] == _id, 'scale_width'].iloc[0]
 
             cv2.imwrite(os.path.join(path_test, "{}.png".format(_id)), cv2.resize(img, (width, height)))
+
+def new_prepare_train_data(
+        train_path, extra_path, output_path, distance_path,
+        invert, center_thresholds, contour_thresholds, train_scale_path, extra_scale_path):
+    ids, images, masks, labels = io.read_train_data(train_path, train_scale_path)
+    extra_ids, extra_images, extra_masks, extra_labels = io.read_train_data(extra_path, extra_scale_path)
+
+    ids.extend(extra_ids)
+    images.extend(extra_images)
+    masks.extend(extra_masks)
+    labels.extend(extra_labels)
+
+    if invert:
+        images = invert_images(images)
+
+    if distance_path:
+        distances = []
+        for _id in tqdm(ids, "Read distances"):
+            distances.append(cv2.imread(os.path.join(distance_path, "{}.png".format(_id)), cv2.IMREAD_UNCHANGED) / 255)
+    else:
+        distances = get_distances(labels)
+
+    centers = []
+    for threshold in center_thresholds:
+        centers.append([dist >= threshold for dist in distances])
+
+    contours = []
+    for threshold in contour_thresholds:
+        contours.append([(dist < threshold) * mask for dist, mask in zip(distances, masks)])
+
+    answers = [np.stack(answer, axis=-1) for answer in zip(masks, *centers, *contours)]
+
+    path_images = os.path.join(output_path, "images")
+    os.makedirs(path_images, exist_ok=True)
+
+    path_masks = os.path.join(output_path, "masks")
+    os.makedirs(path_masks, exist_ok=True)
+    path_distances = os.path.join(output_path, "distances")
+
+    os.makedirs(path_distances, exist_ok=True)
+
+    for image, answer, dist, _id in tqdm(zip(images, answers, distances, ids), total=len(ids), desc='Save train data'):
+        cv2.imwrite(os.path.join(path_images, "{}.png".format(_id)), image)
+        cv2.imwrite(os.path.join(path_masks, "{}.png".format(_id)), answer)
+        cv2.imwrite(os.path.join(path_distances, "{}.png".format(_id)), img_as_ubyte(dist))
+
+def new_prepare_test_data(
+        test_path, output_path, invert, scale_path):
+    test_ids, test_images = io.read_test_data(test_path, scale_path)
+
+    if invert:
+        test_images = invert_images(test_images)
+
+    path_test = os.path.join(output_path, "test")
+    os.makedirs(path_test, exist_ok=True)
+
+    for image, _id in tqdm(zip(test_images, test_ids), total=len(test_ids), desc='Save test data'):
+        cv2.imwrite(os.path.join(path_test, "{}.png".format(_id)), image)
