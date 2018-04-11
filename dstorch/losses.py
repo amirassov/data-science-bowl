@@ -31,6 +31,16 @@ class BCEDiceLoss(nn.Module):
         return self.bce(input, target) - torch.log(self.dice(input, target))
 
 
+class BCEDiceLossWithoutLog(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.dice = DiceLoss()
+        self.bce = nn.modules.loss.BCEWithLogitsLoss()
+
+    def forward(self, input, target):
+        return self.bce(input, target) - self.dice(input, target)
+
+
 class BCEDiceLossOneClass(nn.Module):
     def __init__(self, cls):
         super().__init__()
@@ -57,10 +67,26 @@ class BCEDiceLossCenters(nn.Module):
         loss += self.weights['center_04'] * self.bce_dice(center_input_04, center_target_04)
         return loss
 
+
 class BCEDiceLossMulti(nn.Module):
     def __init__(self, num_classes, weights):
         super().__init__()
         self.bce_dice = BCEDiceLoss()
+        self.num_classes = num_classes
+        self.weights = weights
+
+    def forward(self, input, target):
+        loss = 0
+        for cls in range(self.num_classes):
+            channel_input, channel_target = input[:, cls], target[:, cls]
+            loss += self.weights[cls] * self.bce_dice(channel_input, channel_target)
+        return loss
+
+
+class BCEDiceLossMultiWithoutLog(nn.Module):
+    def __init__(self, num_classes, weights):
+        super().__init__()
+        self.bce_dice = BCEDiceLossWithoutLog()
         self.num_classes = num_classes
         self.weights = weights
 
