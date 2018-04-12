@@ -50,6 +50,7 @@ def get_scale_df(ids, images, labels_file, size):
         columns=['ImageId', 'height', 'width']
     )
     df_scale = df_shape.merge(df_area, on='ImageId', how='left')
+    df_scale['area'] = df_scale['area'].fillna(size)
     df_scale['scale_width'] = (df_scale['width'] * (size / df_scale['area']) ** 0.5).astype(int)
     df_scale['scale_height'] = (df_scale['height'] * (size / df_scale['area']) ** 0.5).astype(int)
     return df_scale
