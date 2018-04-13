@@ -1,3 +1,5 @@
+# https://github.com/ternaus/TernausNet
+
 import torch
 import torchvision
 from torch import nn

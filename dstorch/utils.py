@@ -11,11 +11,14 @@ def variable(x, volatile=False):
         return [variable(y, volatile=volatile) for y in x]
     return cuda(Variable(x, volatile=volatile))
 
+
 def cuda(x):
     return x.cuda(async=True) if torch.cuda.is_available() else x
 
+
 def to_float_tensor(img):
     return torch.from_numpy(np.moveaxis(img, -1, 0)).float()
+
 
 def pad_image(image, period):
     w, h = image.shape[:2]
@@ -33,12 +36,14 @@ def pad_image(image, period):
         cv2.BORDER_REFLECT_101
     ), top, left
 
+
 def make_submission(fname, ids, rles):
     sub = pd.DataFrame()
     sub['ImageId'] = ids
     sub['EncodedPixels'] = pd.Series(rles).apply(lambda x: ' '.join(str(y) for y in x))
     sub.to_csv(fname, index=False)
     return sub
+
 
 def train_val_split(classes: pd.DataFrame, ids: list, *args):
     train_id_set = set(classes.loc[classes['type'] == 'train', 'id'])
@@ -54,6 +59,7 @@ def train_val_split(classes: pd.DataFrame, ids: list, *args):
         val_args.append([arg[i] for i in val_indices])
     return train_args, val_args
 
+
 def rle_decoding(rle, shape):
     h, w = shape[:2]
     s = np.asarray(rle.split(), dtype=int)
@@ -64,6 +70,7 @@ def rle_decoding(rle, shape):
         img[start:end] = 1
     return img.reshape(w, h).T.reshape(shape)
 
+
 def rles2labels(rles, shapes, ids):
     labels = []
     for image_id, shape in tqdm(zip(ids, shapes), total=len(ids)):
@@ -73,6 +80,7 @@ def rles2labels(rles, shapes, ids):
             label += (i + 1) * rle_decoding(row['EncodedPixels'], shape)
         labels.append(label)
     return labels
+
 
 def rle_encode(x):
     dots = np.where(x.T.flatten() == 1)[0]
@@ -85,11 +93,13 @@ def rle_encode(x):
         prev = b
     return run_lengths
 
+
 def probability2rle(probability, postprocess_function, **kwargs):
     labeled_image = postprocess_function(probability, **kwargs)
     for i in np.unique(labeled_image):
         if i:
             yield rle_encode(labeled_image == i)
+
 
 def mask2rle(predictions, ids, postprocess_function, **kwargs):
     mask_ids = []

@@ -41,6 +41,7 @@ def invert_images(images: list):
 def pixels_size(x):
     return sum([int(x) for x in x.split(' ')[1::2]])
 
+
 def get_scale_df(ids, images, labels_file, size):
     labels = pd.read_csv(labels_file)
     labels['area'] = labels['EncodedPixels'].apply(pixels_size)
@@ -55,11 +56,12 @@ def get_scale_df(ids, images, labels_file, size):
     df_scale['scale_height'] = (df_scale['height'] * (size / df_scale['area']) ** 0.5).astype(int)
     return df_scale
 
+
 # for backward compatibility
 def prepare_data(
-        train_path, test_path, extra_path, output_path, distance_path,
-        invert, center_thresholds, contour_thresholds,
-        scale, labels_file, test_labels_file, size):
+    train_path, test_path, extra_path, output_path, distance_path,
+    invert, center_thresholds, contour_thresholds,
+    scale, labels_file, test_labels_file, size):
     ids, images, masks, labels = io.read_train_data(train_path)
     test_ids, test_images = io.read_test_data(test_path)
     extra_ids, extra_images, extra_masks, extra_labels = io.read_train_data(extra_path)
@@ -130,10 +132,11 @@ def prepare_data(
 
             cv2.imwrite(os.path.join(path_test, "{}.png".format(_id)), cv2.resize(img, (width, height)))
 
+
 def prepare_train_data(
-        train_path, extra_path, output_path, distance_path,
-        invert, center_thresholds, contour_thresholds,
-        scale, labels_file, size):
+    train_path, extra_path, output_path, distance_path,
+    invert, center_thresholds, contour_thresholds,
+    scale, labels_file, size):
     ids, images, masks, labels = io.read_train_data(train_path)
     extra_ids, extra_images, extra_masks, extra_labels = io.read_train_data(extra_path)
 
@@ -190,8 +193,9 @@ def prepare_train_data(
             cv2.imwrite(os.path.join(path_images, "{}.png".format(_id)), cv2.resize(img, (width, height)))
             cv2.imwrite(os.path.join(path_masks, "{}.png".format(_id)), cv2.resize(answer, (width, height)))
 
+
 def prepare_test_data(
-        test_path, output_path, invert, scale, test_labels_file, size):
+    test_path, output_path, invert, scale, test_labels_file, size):
     test_ids, test_images = io.read_test_data(test_path)
 
     if invert:

@@ -13,14 +13,17 @@ def flip_tensor_lr(batch):
     invert_indices = torch.arange(batch.data.size()[-1] - 1, -1, -1).long()
     return batch.index_select(3, variable(invert_indices))
 
+
 def flip_tensor_ud(batch):
     invert_indices = torch.arange(batch.data.size()[-2] - 1, -1, -1).long()
     return torch.index_select(batch, 2, variable(invert_indices))
+
 
 def to_numpy(batch):
     if isinstance(batch, tuple):
         batch = batch[0]
     return F.sigmoid(batch).data.cpu().numpy()
+
 
 def batch_predict(model, batch, flips=0):
     pred1 = model(batch)
@@ -35,7 +38,8 @@ def batch_predict(model, batch, flips=0):
         return to_numpy(new_mask)
     return to_numpy(pred1)
 
-def predict(model, ids,  path_images, transforms, period, flips, num_workers):
+
+def predict(model, ids, path_images, transforms, period, flips, num_workers):
     dataset = TestDataset(ids, path_images, transforms, period)
 
     loader = DataLoader(

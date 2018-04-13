@@ -2,6 +2,7 @@ import numpy as np
 from tqdm import tqdm_notebook
 from collections import defaultdict
 
+
 def get_ious(y_true, y_pred):
     ious = []
     for prediction in y_pred:
@@ -14,6 +15,7 @@ def get_ious(y_true, y_pred):
                 max_union = np.sum(np.maximum(prediction, ground_truth))
         ious.append(max_intersection / max_union)
     return ious
+
 
 def local_mean_iou(y_true, y_pred):
     p = 0
@@ -37,6 +39,7 @@ def get_scores(gt_labels, name2predictions):
             name2scores[name].append(score)
             print("{}: {}: {}, mean: {}".format(i, name, score, np.mean(name2scores[name])))
     return name2scores
+
 
 def get_labels(labeled_image):
     labels = []

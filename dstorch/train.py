@@ -12,7 +12,8 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from dstorch.dataset import TrainDataset, ValDataset
-from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss, BCEDiceLossOneClass, BCEDiceLossMulti, BCEDiceLossMultiWithoutLog
+from dstorch.losses import BCEDiceLoss, BCEDiceLossCenters, DiceLoss, BCEDiceLossOneClass, BCEDiceLossMulti, \
+    BCEDiceLossMultiWithoutLog
 from dstorch.models import TernausNet34, UNet11
 from dstorch.utils import variable
 
@@ -27,7 +28,6 @@ optimizers = {
     'RMSprop': RMSprop
 }
 
-
 losses = {
     'BCEDiceLoss': BCEDiceLoss,
     'BCEDiceLossCenters': BCEDiceLossCenters,
@@ -35,19 +35,22 @@ losses = {
     'BCEDiceLossMultiWithoutLog': BCEDiceLossMultiWithoutLog
 }
 
+
 def cyclic_lr(epoch, init_lr=1e-3, num_epochs_per_cycle=5, cycle_epochs_decay=2, lr_decay_factor=0.3):
     epoch_in_cycle = epoch % num_epochs_per_cycle
     lr = init_lr * (lr_decay_factor ** (epoch_in_cycle // cycle_epochs_decay))
     return lr
 
+
 def adjust_lr(epoch, init_lr=3e-4, num_epochs_per_decay=100, lr_decay_factor=0.5):
     lr = init_lr * (lr_decay_factor ** (epoch // num_epochs_per_decay))
     return lr
 
+
 def cyclic_adjust_lr(
     epoch, global_num_epochs_per_cycle=100, global_cycle_lr_decay_factor=0.7,
     cycle_init_lr=1e-3, num_epochs_per_cycle=5, cycle_epochs_decay=2, cycle_lr_decay_factor=0.3,
-        adjust_init_lr=3e-4, num_epochs_per_decay=100, adjust_lr_decay_factor=0.5
+    adjust_init_lr=3e-4, num_epochs_per_decay=100, adjust_lr_decay_factor=0.5
 ):
     end_epochs = global_num_epochs_per_cycle * (epoch // global_num_epochs_per_cycle + 1) - epoch
     if end_epochs < num_epochs_per_cycle * cycle_epochs_decay + 1:
@@ -62,8 +65,8 @@ def cyclic_adjust_lr(
 
 class PytorchTrain:
     def __init__(
-            self, model_name, network, nb_epoch, loss,
-            lr_args, model_dir, log_dir, metrics, network_args, loss_args, optimizer
+        self, model_name, network, nb_epoch, loss,
+        lr_args, model_dir, log_dir, metrics, network_args, loss_args, optimizer
     ):
         self.model_name = model_name
         self.nb_epoch = nb_epoch
@@ -197,10 +200,10 @@ class PytorchTrain:
 
 
 def train(
-        train_args,
-        train_ids, val_ids, path_images, path_masks,
-        batch_size=16, num_workers=1,
-        train_transforms=None, val_transforms=None, period=64,
+    train_args,
+    train_ids, val_ids, path_images, path_masks,
+    batch_size=16, num_workers=1,
+    train_transforms=None, val_transforms=None, period=64,
 ):
     train_dataset = TrainDataset(train_ids, path_images, path_masks, train_transforms)
     val_dataset = ValDataset(val_ids, path_images, path_masks, val_transforms, period)
